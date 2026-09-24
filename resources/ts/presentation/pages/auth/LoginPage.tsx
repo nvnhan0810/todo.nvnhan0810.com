@@ -45,11 +45,11 @@ const LoginPage = ({ flash }: Props): React.ReactElement => {
           ) : null}
 
           <div className="flex flex-col gap-3">
-            <Button asChild className="w-full" size="lg">
-              <a href={route("auth.sso")}>{t("auth.continue_sso")}</a>
-            </Button>
             <Button asChild variant="outline" className="w-full" size="lg">
               <a href={route("auth.google")}>{t("auth.continue_google")}</a>
+            </Button>
+            <Button asChild className="w-full" size="lg">
+              <a href={route("auth.sso")}>{t("auth.continue_sso")}</a>
             </Button>
           </div>
         </div>

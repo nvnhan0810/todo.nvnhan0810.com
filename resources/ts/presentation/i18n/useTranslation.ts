@@ -22,6 +22,9 @@ export const useTranslation = (): {
   const { locale, translations } = usePage().props as unknown as SharedI18nProps;
 
   useEffect(() => {
+    if (typeof document === "undefined") {
+      return;
+    }
     setI18nCatalog(locale, translations);
     document.documentElement.lang = locale;
   }, [locale, translations]);

@@ -57,7 +57,8 @@ RUN rm -rf /tmp/app/node_modules \
 
 ENV NODE_ENV=production
 RUN npm run build --ignore-scripts \
-    && test -f public/build/manifest.json
+    && test -f public/build/manifest.json \
+    && test -f bootstrap/ssr/ssr.js
 
 # -----------------------------------------------------------------------------
 # Production runtime (nginx + php-fpm + queue + schedule)
@@ -72,6 +73,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         supervisor \
         curl \
         ca-certificates \
+        gnupg \
         libpng-dev \
         libjpeg62-turbo-dev \
         libfreetype6-dev \
@@ -81,6 +83,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libxml2-dev \
         libsqlite3-dev \
         $PHPIZE_DEPS \
+    && curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
+    && apt-get install -y --no-install-recommends nodejs \
+    && ln -sf /usr/bin/node /usr/local/bin/node \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j"$(nproc)" \
         gd \
@@ -124,9 +129,10 @@ COPY --from=vendor /app/composer.lock ./composer.lock
 # Base public/ first, then Vite build so manifest + hashed assets win.
 COPY public ./public
 COPY --from=assets /app/public/build ./public/build
+COPY --from=assets /app/bootstrap/ssr ./bootstrap/ssr
 
 RUN mkdir -p storage/framework/{cache,sessions,views} storage/logs storage/app/public bootstrap/cache \
-    && chown -R www-data:www-data storage bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache bootstrap/ssr \
     && chmod -R ug+rwX storage bootstrap/cache
 
 EXPOSE 8080

@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LocaleController;
 use Illuminate\Support\Facades\Route;
 use Modules\Identity\Presentation\Http\Controllers\AuthController;
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -15,5 +18,3 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
 Route::post('/locale', [LocaleController::class, 'update'])->name('locale.update');
-
-Route::redirect('/', '/matrix')->middleware('auth');

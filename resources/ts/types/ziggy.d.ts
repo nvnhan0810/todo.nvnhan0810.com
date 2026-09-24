@@ -72,12 +72,14 @@ declare module 'ziggy-js' {
             "required": true
         }
     ],
+    "home": [],
     "login": [],
     "auth.sso": [],
     "auth.sso.callback": [],
     "auth.google": [],
     "auth.google.callback": [],
     "logout": [],
+    "locale.update": [],
     "storage.local": [
         {
             "name": "path",
