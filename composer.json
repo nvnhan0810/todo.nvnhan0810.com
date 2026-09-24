@@ -15,6 +15,7 @@
         "laravel/socialite": "^5.31",
         "laravel/tinker": "^3.0",
         "minishlink/web-push": "^11.0",
+        "nvnhan0810/laravel-telegram-logging": "^1.0",
         "tightenco/ziggy": "^2.6"
     },
     "require-dev": {
