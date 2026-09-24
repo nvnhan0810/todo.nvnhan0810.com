@@ -71,7 +71,7 @@ class MatrixController extends Controller
             $maxSeconds = 120;
 
             while (! connection_aborted() && (time() - $startedAt) < $maxSeconds) {
-                $matrixVersion = $this->matrixStreamVersion->current();
+                $matrixVersion = $this->matrixStreamVersion->current($userId);
                 $pomodoroVersion = $this->pomodoroStreamVersion->current($userId);
                 $sentEvent = false;
 
@@ -125,15 +125,21 @@ class MatrixController extends Controller
 
     public function startPomodoro(Request $request): JsonResponse
     {
+        $userId = (int) Auth::id();
         $data = $request->validate([
-            'activeTodoId' => ['sometimes', 'nullable', 'integer', 'exists:todos,id'],
+            'activeTodoId' => [
+                'sometimes',
+                'nullable',
+                'integer',
+                Rule::exists('todos', 'id')->where(fn ($q) => $q->where('user_id', $userId)),
+            ],
         ]);
 
         $activeTodoId = array_key_exists('activeTodoId', $data) && is_numeric($data['activeTodoId'] ?? null)
             ? (int) $data['activeTodoId']
             : null;
 
-        return response()->json($this->commands->dispatch(new StartPomodoro((int) Auth::id(), $activeTodoId)));
+        return response()->json($this->commands->dispatch(new StartPomodoro($userId, $activeTodoId)));
     }
 
     public function pausePomodoro(): JsonResponse
@@ -165,15 +171,20 @@ class MatrixController extends Controller
 
     public function updatePomodoroActiveTodo(Request $request): JsonResponse
     {
+        $userId = (int) Auth::id();
         $data = $request->validate([
-            'activeTodoId' => ['nullable', 'integer', 'exists:todos,id'],
+            'activeTodoId' => [
+                'nullable',
+                'integer',
+                Rule::exists('todos', 'id')->where(fn ($q) => $q->where('user_id', $userId)),
+            ],
         ]);
 
         $activeTodoId = isset($data['activeTodoId']) && is_numeric($data['activeTodoId'])
             ? (int) $data['activeTodoId']
             : null;
 
-        return response()->json($this->commands->dispatch(new SelectPomodoroActiveTodo((int) Auth::id(), $activeTodoId)));
+        return response()->json($this->commands->dispatch(new SelectPomodoroActiveTodo($userId, $activeTodoId)));
     }
 
     public function focusPomodoro(Request $request): JsonResponse
@@ -194,6 +205,7 @@ class MatrixController extends Controller
 
     public function update(Request $request, string $id): RedirectResponse
     {
+        $userId = (int) Auth::id();
         $data = $request->validate([
             'is_urgent' => ['required', 'boolean'],
             'is_important' => ['required', 'boolean'],
@@ -201,11 +213,12 @@ class MatrixController extends Controller
         ]);
 
         $this->commands->dispatch(new UpdateMatrixTodo(
+            $userId,
             (int) $id,
             $request->boolean('is_urgent'),
             $request->boolean('is_important'),
             $data['status'] ?? null,
-            Auth::id() !== null ? (int) Auth::id() : null,
+            $userId,
         ));
 
         return redirect()->route('matrix.index');
@@ -213,9 +226,15 @@ class MatrixController extends Controller
 
     public function promoteBacklog(Request $request): RedirectResponse
     {
+        $userId = (int) Auth::id();
         $data = $request->validate([
             'items' => ['required', 'array', 'min:1'],
-            'items.*.id' => ['required', 'integer', 'distinct', 'exists:todos,id'],
+            'items.*.id' => [
+                'required',
+                'integer',
+                'distinct',
+                Rule::exists('todos', 'id')->where(fn ($q) => $q->where('user_id', $userId)),
+            ],
             'items.*.is_urgent' => ['required', 'boolean'],
             'items.*.is_important' => ['required', 'boolean'],
         ]);
@@ -231,8 +250,9 @@ class MatrixController extends Controller
         );
 
         $this->commands->dispatch(new PromoteBacklogItems(
+            $userId,
             $items,
-            Auth::id() !== null ? (int) Auth::id() : null,
+            $userId,
         ));
 
         return redirect()->route('matrix.index');
@@ -240,7 +260,7 @@ class MatrixController extends Controller
 
     public function complete(string $id): RedirectResponse
     {
-        $this->commands->dispatch(new CompleteMatrixTodo((int) $id));
+        $this->commands->dispatch(new CompleteMatrixTodo((int) Auth::id(), (int) $id));
 
         return redirect()->route('matrix.index');
     }

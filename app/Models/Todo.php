@@ -16,6 +16,7 @@ class Todo extends Model
     public const PRIORITIES = ['low', 'medium', 'high', 'urgent'];
 
     protected $fillable = [
+        'user_id',
         'project_id',
         'title',
         'description',
@@ -37,6 +38,11 @@ class Todo extends Model
             'is_urgent' => 'boolean',
             'is_important' => 'boolean',
         ];
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function project(): BelongsTo

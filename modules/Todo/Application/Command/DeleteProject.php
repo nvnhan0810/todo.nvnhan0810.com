@@ -6,5 +6,8 @@ use Modules\Shared\Application\Command;
 
 final class DeleteProject implements Command
 {
-    public function __construct(public readonly int $projectId) {}
+    public function __construct(
+        public readonly int $userId,
+        public readonly int $projectId,
+    ) {}
 }

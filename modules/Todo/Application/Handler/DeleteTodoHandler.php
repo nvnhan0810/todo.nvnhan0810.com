@@ -14,7 +14,7 @@ final class DeleteTodoHandler implements CommandHandler
     public function handle(Command $command): mixed
     {
         assert($command instanceof DeleteTodo);
-        $this->todos->delete($command->todoId);
+        $this->todos->delete($command->userId, $command->todoId);
 
         return null;
     }

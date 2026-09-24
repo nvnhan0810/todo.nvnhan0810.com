@@ -4,15 +4,16 @@ namespace Modules\Todo\Infrastructure;
 
 use App\Models\EisenhowerLog;
 use App\Models\Todo;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Modules\Todo\Domain\Ports\TodoRepository;
 use Modules\Todo\Domain\TodoStatus;
 
 final class EloquentTodoRepository implements TodoRepository
 {
-    public function listActiveByQuadrant(): array
+    public function listActiveByQuadrant(int $userId): array
     {
-        $todos = Todo::query()
+        $todos = $this->owned($userId)
             ->with('project:id,name')
             ->whereIn('status', TodoStatus::ACTIVE)
             ->orderByRaw("CASE priority WHEN 'urgent' THEN 0 WHEN 'high' THEN 1 WHEN 'medium' THEN 2 ELSE 3 END")
@@ -31,9 +32,9 @@ final class EloquentTodoRepository implements TodoRepository
         ];
     }
 
-    public function listBacklog(): array
+    public function listBacklog(int $userId): array
     {
-        return Todo::query()
+        return $this->owned($userId)
             ->with('project:id,name')
             ->where('status', TodoStatus::BACKLOG)
             ->orderByRaw("CASE priority WHEN 'urgent' THEN 0 WHEN 'high' THEN 1 WHEN 'medium' THEN 2 ELSE 3 END")
@@ -43,13 +44,13 @@ final class EloquentTodoRepository implements TodoRepository
             ->toArray();
     }
 
-    public function paginate(array $filters, int $perPage = 20): array
+    public function paginate(int $userId, array $filters, int $perPage = 20): array
     {
         $search = isset($filters['search']) && is_string($filters['search'])
             ? trim($filters['search'])
             : '';
 
-        $paginator = Todo::query()
+        $paginator = $this->owned($userId)
             ->with('project:id,name')
             ->when(
                 isset($filters['project_id']) && is_numeric($filters['project_id']),
@@ -76,21 +77,25 @@ final class EloquentTodoRepository implements TodoRepository
         return $paginator->toArray();
     }
 
-    public function findById(int $id): ?array
+    public function findById(int $userId, int $id): ?array
     {
-        $todo = Todo::query()->with('project:id,name')->find($id);
+        $todo = $this->owned($userId)->with('project:id,name')->find($id);
 
         return $todo?->toArray();
     }
 
-    public function create(array $data): array
+    public function create(int $userId, array $data): array
     {
+        $data['user_id'] = $userId;
+
         return Todo::query()->create($data)->fresh(['project:id,name'])->toArray();
     }
 
-    public function update(int $id, array $data): array
+    public function update(int $userId, int $id, array $data): array
     {
-        $todo = Todo::query()->findOrFail($id);
+        $todo = $this->owned($userId)->findOrFail($id);
+
+        unset($data['user_id']);
 
         if (($data['status'] ?? null) === TodoStatus::DONE && $todo->closed_at === null) {
             $data['closed_at'] = now();
@@ -107,14 +112,14 @@ final class EloquentTodoRepository implements TodoRepository
         return $todo->fresh(['project:id,name'])->toArray();
     }
 
-    public function delete(int $id): void
+    public function delete(int $userId, int $id): void
     {
-        Todo::query()->findOrFail($id)->delete();
+        $this->owned($userId)->findOrFail($id)->delete();
     }
 
-    public function updateMatrixFlags(int $id, array $data, ?int $actorUserId): array
+    public function updateMatrixFlags(int $userId, int $id, array $data, ?int $actorUserId): array
     {
-        $todo = Todo::query()
+        $todo = $this->owned($userId)
             ->whereIn('status', TodoStatus::ACTIVE)
             ->findOrFail($id);
 
@@ -140,9 +145,9 @@ final class EloquentTodoRepository implements TodoRepository
         return $todo->fresh()->toArray();
     }
 
-    public function markComplete(int $id): array
+    public function markComplete(int $userId, int $id): array
     {
-        $todo = Todo::query()
+        $todo = $this->owned($userId)
             ->whereIn('status', TodoStatus::ACTIVE)
             ->findOrFail($id);
 
@@ -154,19 +159,19 @@ final class EloquentTodoRepository implements TodoRepository
         return $todo->fresh()->toArray();
     }
 
-    public function promoteBacklogItems(array $items, ?int $actorUserId): int
+    public function promoteBacklogItems(int $userId, array $items, ?int $actorUserId): int
     {
         if ($items === []) {
             return 0;
         }
 
-        return (int) DB::transaction(function () use ($items, $actorUserId): int {
+        return (int) DB::transaction(function () use ($userId, $items, $actorUserId): int {
             $ids = array_values(array_unique(array_map(
                 static fn (array $item): int => $item['id'],
                 $items,
             )));
 
-            $todos = Todo::query()
+            $todos = $this->owned($userId)
                 ->where('status', TodoStatus::BACKLOG)
                 ->whereIn('id', $ids)
                 ->get()
@@ -200,5 +205,13 @@ final class EloquentTodoRepository implements TodoRepository
 
             return $updated;
         });
+    }
+
+    /**
+     * @return Builder<Todo>
+     */
+    private function owned(int $userId): Builder
+    {
+        return Todo::query()->where('user_id', $userId);
     }
 }

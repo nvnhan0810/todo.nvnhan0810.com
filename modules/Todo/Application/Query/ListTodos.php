@@ -7,6 +7,7 @@ use Modules\Shared\Application\Query;
 final class ListTodos implements Query
 {
     public function __construct(
+        public readonly int $userId,
         public readonly ?int $projectId = null,
         public readonly ?string $status = null,
         public readonly ?string $search = null,

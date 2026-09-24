@@ -9,5 +9,8 @@ final class CreateTodo implements Command
     /**
      * @param  array<string, mixed>  $data
      */
-    public function __construct(public readonly array $data) {}
+    public function __construct(
+        public readonly int $userId,
+        public readonly array $data,
+    ) {}
 }

@@ -15,6 +15,6 @@ final class PromoteBacklogItemsHandler implements CommandHandler
     {
         assert($command instanceof PromoteBacklogItems);
 
-        return $this->todos->promoteBacklogItems($command->items, $command->actorUserId);
+        return $this->todos->promoteBacklogItems($command->userId, $command->items, $command->actorUserId);
     }
 }

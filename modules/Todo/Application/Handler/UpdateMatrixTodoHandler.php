@@ -15,7 +15,7 @@ final class UpdateMatrixTodoHandler implements CommandHandler
     {
         assert($command instanceof UpdateMatrixTodo);
 
-        return $this->todos->updateMatrixFlags($command->todoId, [
+        return $this->todos->updateMatrixFlags($command->userId, $command->todoId, [
             'is_urgent' => $command->isUrgent,
             'is_important' => $command->isImportant,
             'status' => $command->status,

@@ -15,6 +15,6 @@ final class CompleteMatrixTodoHandler implements CommandHandler
     {
         assert($command instanceof CompleteMatrixTodo);
 
-        return $this->todos->markComplete($command->todoId);
+        return $this->todos->markComplete($command->userId, $command->todoId);
     }
 }

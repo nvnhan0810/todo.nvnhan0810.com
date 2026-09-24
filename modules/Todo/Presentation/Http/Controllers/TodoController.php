@@ -5,6 +5,7 @@ namespace Modules\Todo\Presentation\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -27,12 +28,14 @@ class TodoController extends Controller
 
     public function index(Request $request): Response
     {
+        $userId = (int) Auth::id();
         $projectId = $request->query('project_id');
         $search = $request->filled('search')
             ? mb_substr(trim($request->string('search')->toString()), 0, 200)
             : null;
 
         $data = $this->queries->ask(new ListTodos(
+            $userId,
             is_numeric($projectId) ? (int) $projectId : null,
             $request->filled('status') ? $request->string('status')->toString() : null,
             $search !== null && $search !== '' ? $search : null,
@@ -44,6 +47,7 @@ class TodoController extends Controller
     public function create(Request $request): Response
     {
         $data = $this->queries->ask(new GetTodoFormData(
+            (int) Auth::id(),
             null,
             is_numeric($request->query('project_id')) ? (int) $request->query('project_id') : null,
         ));
@@ -53,28 +57,34 @@ class TodoController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $this->commands->dispatch(new CreateTodo($this->validated($request)));
+        $userId = (int) Auth::id();
+        $this->commands->dispatch(new CreateTodo($userId, $this->validated($request, $userId)));
 
         return $this->redirectAfterSave($request);
     }
 
     public function edit(string $id): Response
     {
-        $data = $this->queries->ask(new GetTodoFormData((int) $id));
+        $data = $this->queries->ask(new GetTodoFormData((int) Auth::id(), (int) $id));
+
+        if (($data['todo'] ?? null) === null) {
+            abort(404);
+        }
 
         return Inertia::render('presentation/pages/admin/todos/FormPage', $data);
     }
 
     public function update(Request $request, string $id): RedirectResponse
     {
-        $this->commands->dispatch(new UpdateTodo((int) $id, $this->validated($request)));
+        $userId = (int) Auth::id();
+        $this->commands->dispatch(new UpdateTodo($userId, (int) $id, $this->validated($request, $userId)));
 
         return $this->redirectAfterSave($request);
     }
 
     public function destroy(string $id): RedirectResponse
     {
-        $this->commands->dispatch(new DeleteTodo((int) $id));
+        $this->commands->dispatch(new DeleteTodo((int) Auth::id(), (int) $id));
 
         return redirect()->route('todos.index');
     }
@@ -100,7 +110,7 @@ class TodoController extends Controller
      *   is_important: bool
      * }
      */
-    private function validated(Request $request): array
+    private function validated(Request $request, int $userId): array
     {
         $request->merge([
             'project_id' => $request->filled('project_id') ? $request->integer('project_id') : null,
@@ -122,7 +132,11 @@ class TodoController extends Controller
          * } $data
          */
         $data = $request->validate([
-            'project_id' => ['nullable', 'integer', 'exists:todo_projects,id'],
+            'project_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('todo_projects', 'id')->where(fn ($q) => $q->where('user_id', $userId)),
+            ],
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'status' => ['required', Rule::in(TodoStatus::ALL)],

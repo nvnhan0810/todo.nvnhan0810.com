@@ -21,11 +21,13 @@ final class GetTodoFormDataHandler implements QueryHandler
     {
         assert($query instanceof GetTodoFormData);
 
-        $todo = $query->todoId !== null ? $this->todos->findById($query->todoId) : null;
+        $todo = $query->todoId !== null
+            ? $this->todos->findById($query->userId, $query->todoId)
+            : null;
 
         return [
             'todo' => $todo,
-            'projects' => $this->projects->listOptions(),
+            'projects' => $this->projects->listOptions($query->userId),
             'statuses' => TodoStatus::ALL,
             'priorities' => TodoPriority::ALL,
             'default_project_id' => $query->defaultProjectId,

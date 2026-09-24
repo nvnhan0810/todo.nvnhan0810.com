@@ -15,6 +15,6 @@ final class CreateProjectHandler implements CommandHandler
     {
         assert($command instanceof CreateProject);
 
-        return $this->projects->create($command->data);
+        return $this->projects->create($command->userId, $command->data);
     }
 }

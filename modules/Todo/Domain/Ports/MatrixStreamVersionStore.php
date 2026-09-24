@@ -4,7 +4,7 @@ namespace Modules\Todo\Domain\Ports;
 
 interface MatrixStreamVersionStore
 {
-    public function current(): int;
+    public function current(int $userId): int;
 
-    public function bump(): void;
+    public function bump(int $userId): void;
 }

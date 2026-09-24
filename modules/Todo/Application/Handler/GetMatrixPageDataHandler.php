@@ -26,14 +26,16 @@ final class GetMatrixPageDataHandler implements QueryHandler
     {
         assert($query instanceof GetMatrixPageData);
 
+        $userId = $query->userId;
+
         return [
-            'quadrants' => $this->todos->listActiveByQuadrant(),
-            'version' => $this->matrixStreamVersion->current(),
-            'pomodoro' => $this->queries->ask(new GetPomodoroState($query->userId)),
-            'projects' => $this->projects->listOptions(),
+            'quadrants' => $this->todos->listActiveByQuadrant($userId),
+            'version' => $this->matrixStreamVersion->current($userId),
+            'pomodoro' => $this->queries->ask(new GetPomodoroState($userId)),
+            'projects' => $this->projects->listOptions($userId),
             'statuses' => TodoStatus::ALL,
             'priorities' => TodoPriority::ALL,
-            'backlog' => $this->todos->listBacklog(),
+            'backlog' => $this->todos->listBacklog($userId),
         ];
     }
 }

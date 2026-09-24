@@ -22,12 +22,12 @@ final class ListTodosHandler implements QueryHandler
         assert($query instanceof ListTodos);
 
         return [
-            'todos' => $this->todos->paginate([
+            'todos' => $this->todos->paginate($query->userId, [
                 'project_id' => $query->projectId,
                 'status' => $query->status,
                 'search' => $query->search,
             ], $query->perPage),
-            'projects' => $this->projects->listOptions(),
+            'projects' => $this->projects->listOptions($query->userId),
             'filters' => [
                 'project_id' => $query->projectId,
                 'status' => $query->status,

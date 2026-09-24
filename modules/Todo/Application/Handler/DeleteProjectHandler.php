@@ -14,7 +14,7 @@ final class DeleteProjectHandler implements CommandHandler
     public function handle(Command $command): mixed
     {
         assert($command instanceof DeleteProject);
-        $this->projects->delete($command->projectId);
+        $this->projects->delete($command->userId, $command->projectId);
 
         return null;
     }

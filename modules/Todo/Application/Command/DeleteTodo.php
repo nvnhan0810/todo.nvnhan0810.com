@@ -6,5 +6,8 @@ use Modules\Shared\Application\Command;
 
 final class DeleteTodo implements Command
 {
-    public function __construct(public readonly int $todoId) {}
+    public function __construct(
+        public readonly int $userId,
+        public readonly int $todoId,
+    ) {}
 }

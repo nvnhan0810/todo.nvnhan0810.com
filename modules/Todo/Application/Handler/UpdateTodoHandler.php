@@ -15,6 +15,6 @@ final class UpdateTodoHandler implements CommandHandler
     {
         assert($command instanceof UpdateTodo);
 
-        return $this->todos->update($command->todoId, $command->data);
+        return $this->todos->update($command->userId, $command->todoId, $command->data);
     }
 }

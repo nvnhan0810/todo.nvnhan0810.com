@@ -15,7 +15,9 @@ final class GetProjectFormDataHandler implements QueryHandler
     {
         assert($query instanceof GetProjectFormData);
 
-        $project = $query->projectId !== null ? $this->projects->findById($query->projectId) : null;
+        $project = $query->projectId !== null
+            ? $this->projects->findById($query->userId, $query->projectId)
+            : null;
 
         return ['project' => $project];
     }

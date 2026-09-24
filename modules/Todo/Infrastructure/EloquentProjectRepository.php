@@ -3,47 +3,59 @@
 namespace Modules\Todo\Infrastructure;
 
 use App\Models\TodoProject;
+use Illuminate\Database\Eloquent\Builder;
 use Modules\Todo\Domain\Ports\ProjectRepository;
 
 final class EloquentProjectRepository implements ProjectRepository
 {
-    public function listAll(): array
+    public function listAll(int $userId): array
     {
-        return TodoProject::query()
+        return $this->owned($userId)
             ->withCount('todos')
             ->orderBy('name')
             ->get()
             ->toArray();
     }
 
-    public function listOptions(): array
+    public function listOptions(int $userId): array
     {
-        return TodoProject::query()
+        return $this->owned($userId)
             ->orderBy('name')
             ->get(['id', 'name'])
             ->toArray();
     }
 
-    public function findById(int $id): ?array
+    public function findById(int $userId, int $id): ?array
     {
-        return TodoProject::query()->find($id)?->toArray();
+        return $this->owned($userId)->find($id)?->toArray();
     }
 
-    public function create(array $data): array
+    public function create(int $userId, array $data): array
     {
+        $data['user_id'] = $userId;
+
         return TodoProject::query()->create($data)->toArray();
     }
 
-    public function update(int $id, array $data): array
+    public function update(int $userId, int $id, array $data): array
     {
-        $project = TodoProject::query()->findOrFail($id);
+        $project = $this->owned($userId)->findOrFail($id);
+        unset($data['user_id']);
         $project->update($data);
 
         return $project->fresh()->toArray();
     }
 
-    public function delete(int $id): void
+    public function delete(int $userId, int $id): void
     {
-        TodoProject::query()->findOrFail($id)->delete();
+        $this->owned($userId)->findOrFail($id)->delete();
+    }
+
+    /**
+     * @return Builder<TodoProject>
+     */
+    private function owned(int $userId): Builder
+    {
+        return TodoProject::query()->where('user_id', $userId);
     }
 }

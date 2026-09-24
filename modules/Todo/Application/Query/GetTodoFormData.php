@@ -7,6 +7,7 @@ use Modules\Shared\Application\Query;
 final class GetTodoFormData implements Query
 {
     public function __construct(
+        public readonly int $userId,
         public readonly ?int $todoId = null,
         public readonly ?int $defaultProjectId = null,
     ) {}

@@ -6,5 +6,8 @@ use Modules\Shared\Application\Query;
 
 final class GetProjectFormData implements Query
 {
-    public function __construct(public readonly ?int $projectId = null) {}
+    public function __construct(
+        public readonly int $userId,
+        public readonly ?int $projectId = null,
+    ) {}
 }

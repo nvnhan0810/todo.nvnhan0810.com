@@ -15,6 +15,6 @@ final class UpdateProjectHandler implements CommandHandler
     {
         assert($command instanceof UpdateProject);
 
-        return $this->projects->update($command->projectId, $command->data);
+        return $this->projects->update($command->userId, $command->projectId, $command->data);
     }
 }

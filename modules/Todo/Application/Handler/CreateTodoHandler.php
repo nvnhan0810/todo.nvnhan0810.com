@@ -15,6 +15,6 @@ final class CreateTodoHandler implements CommandHandler
     {
         assert($command instanceof CreateTodo);
 
-        return $this->todos->create($command->data);
+        return $this->todos->create($command->userId, $command->data);
     }
 }

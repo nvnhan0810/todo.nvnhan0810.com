@@ -15,6 +15,6 @@ final class ListProjectsHandler implements QueryHandler
     {
         assert($query instanceof ListProjects);
 
-        return ['projects' => $this->projects->listAll()];
+        return ['projects' => $this->projects->listAll($query->userId)];
     }
 }

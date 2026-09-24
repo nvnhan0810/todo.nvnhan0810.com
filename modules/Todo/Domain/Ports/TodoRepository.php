@@ -5,6 +5,7 @@ namespace Modules\Todo\Domain\Ports;
 /**
  * Persistence port for todos + related matrix/CRUD reads/writes.
  * Returns array shapes suitable for Inertia / JSON (no Eloquent leakage).
+ * All methods are scoped to a single owner user.
  */
 interface TodoRepository
 {
@@ -26,51 +27,51 @@ interface TodoRepository
      *   eliminate: list<array<string, mixed>>
      * }
      */
-    public function listActiveByQuadrant(): array;
+    public function listActiveByQuadrant(int $userId): array;
 
     /**
      * @return list<array<string, mixed>>
      */
-    public function listBacklog(): array;
+    public function listBacklog(int $userId): array;
 
     /**
      * @param  array{project_id?: int|null, status?: string|null, search?: string|null}  $filters
      * @return array{data: list<array<string, mixed>>, meta: array<string, mixed>}
      */
-    public function paginate(array $filters, int $perPage = 20): array;
+    public function paginate(int $userId, array $filters, int $perPage = 20): array;
 
     /**
      * @return array<string, mixed>|null
      */
-    public function findById(int $id): ?array;
+    public function findById(int $userId, int $id): ?array;
 
     /**
      * @param  array<string, mixed>  $data
      * @return array<string, mixed>
      */
-    public function create(array $data): array;
+    public function create(int $userId, array $data): array;
 
     /**
      * @param  array<string, mixed>  $data
      * @return array<string, mixed>
      */
-    public function update(int $id, array $data): array;
+    public function update(int $userId, int $id, array $data): array;
 
-    public function delete(int $id): void;
+    public function delete(int $userId, int $id): void;
 
     /**
      * @param  array{is_urgent: bool, is_important: bool, status?: string}  $data
      * @return array<string, mixed>
      */
-    public function updateMatrixFlags(int $id, array $data, ?int $actorUserId): array;
+    public function updateMatrixFlags(int $userId, int $id, array $data, ?int $actorUserId): array;
 
     /**
      * @return array<string, mixed>
      */
-    public function markComplete(int $id): array;
+    public function markComplete(int $userId, int $id): array;
 
     /**
      * @param  list<array{id: int, is_urgent: bool, is_important: bool}>  $items
      */
-    public function promoteBacklogItems(array $items, ?int $actorUserId): int;
+    public function promoteBacklogItems(int $userId, array $items, ?int $actorUserId): int;
 }
