@@ -1,16 +1,20 @@
 import { Button } from "@/ts/components/ui/button";
 import type { RootProps } from "@/ts/presentation/layouts/AppShell";
 import LandingLayout from "@/ts/presentation/layouts/LandingLayout";
+import { YoutubeEmbed } from "@/ts/presentation/components/YoutubeEmbed";
 import { useTranslation } from "@/ts/presentation/i18n/useTranslation";
 import { Link } from "@inertiajs/react";
 import {
   ArrowRight,
+  Bell,
   Focus,
+  Home,
   LayoutGrid,
   Link2Off,
   MonitorSmartphone,
   PanelsTopLeft,
   Play,
+  Smartphone,
   Sparkles,
   Timer,
   Zap,
@@ -18,6 +22,12 @@ import {
 import { useRoute } from "ziggy-js";
 
 type Props = RootProps;
+
+/** Public YouTube guides: iOS PWA home screen + Android Chrome home screen. */
+const PWA_INSTALL_VIDEO_IDS = {
+  ios: "La1ZRc73PwA",
+  android: "k4DxF48SNTY",
+} as const;
 
 const LandingPage = ({ auth }: Props): React.ReactElement => {
   const { t } = useTranslation();
@@ -79,6 +89,38 @@ const LandingPage = ({ auth }: Props): React.ReactElement => {
       title: t("landing.why.item3_title"),
       description: t("landing.why.item3_desc"),
     },
+  ];
+
+  const pwaBenefits = [
+    {
+      icon: Home,
+      title: t("landing.pwa.benefit1_title"),
+      description: t("landing.pwa.benefit1_desc"),
+    },
+    {
+      icon: Bell,
+      title: t("landing.pwa.benefit2_title"),
+      description: t("landing.pwa.benefit2_desc"),
+    },
+    {
+      icon: Smartphone,
+      title: t("landing.pwa.benefit3_title"),
+      description: t("landing.pwa.benefit3_desc"),
+    },
+  ];
+
+  const iosSteps = [
+    t("landing.pwa.ios_step1"),
+    t("landing.pwa.ios_step2"),
+    t("landing.pwa.ios_step3"),
+    t("landing.pwa.ios_step4"),
+  ];
+
+  const androidSteps = [
+    t("landing.pwa.android_step1"),
+    t("landing.pwa.android_step2"),
+    t("landing.pwa.android_step3"),
+    t("landing.pwa.android_step4"),
   ];
 
   const primaryCta = isAuthenticated ? (
@@ -259,7 +301,89 @@ const LandingPage = ({ auth }: Props): React.ReactElement => {
         </div>
       </section>
 
-      <section id="cta" className="scroll-mt-24 bg-background">
+      <section id="pwa" className="scroll-mt-24 bg-background">
+        <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-20">
+          <div className="mx-auto mb-10 max-w-2xl text-center">
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-teal-700 dark:text-teal-300">
+              {t("landing.nav.pwa")}
+            </p>
+            <h2 className="text-3xl font-extrabold tracking-tight text-balance sm:text-4xl">
+              {t("landing.pwa_title")}
+            </h2>
+            <p className="mt-3 text-muted-foreground">{t("landing.pwa_desc")}</p>
+          </div>
+
+          <div className="mb-12 grid gap-4 md:grid-cols-3">
+            {pwaBenefits.map((item) => {
+              const Icon = item.icon;
+              return (
+                <article
+                  key={item.title}
+                  className="rounded-2xl border border-border bg-card p-6"
+                >
+                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-teal-500/10 text-teal-700 dark:text-teal-300">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <h3 className="mb-2 text-lg font-bold">{item.title}</h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {item.description}
+                  </p>
+                </article>
+              );
+            })}
+          </div>
+
+          <h3 className="mb-6 text-center text-xl font-bold tracking-tight">
+            {t("landing.pwa.install_title")}
+          </h3>
+          <div className="grid gap-4 lg:grid-cols-2">
+            <article className="rounded-2xl border border-border bg-muted/40 p-6">
+              <h4 className="mb-4 text-base font-bold">{t("landing.pwa.ios_title")}</h4>
+              <ol className="space-y-3">
+                {iosSteps.map((step, index) => (
+                  <li key={step} className="flex gap-3 text-sm leading-relaxed text-muted-foreground">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-foreground text-xs font-bold text-background">
+                      {index + 1}
+                    </span>
+                    <span>{step}</span>
+                  </li>
+                ))}
+              </ol>
+              <div className="mt-5">
+                <YoutubeEmbed
+                  videoId={PWA_INSTALL_VIDEO_IDS.ios}
+                  title={t("landing.pwa.ios_video_title")}
+                />
+              </div>
+            </article>
+            <article className="rounded-2xl border border-border bg-muted/40 p-6">
+              <h4 className="mb-4 text-base font-bold">{t("landing.pwa.android_title")}</h4>
+              <ol className="space-y-3">
+                {androidSteps.map((step, index) => (
+                  <li key={step} className="flex gap-3 text-sm leading-relaxed text-muted-foreground">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-foreground text-xs font-bold text-background">
+                      {index + 1}
+                    </span>
+                    <span>{step}</span>
+                  </li>
+                ))}
+              </ol>
+              <div className="mt-5">
+                <YoutubeEmbed
+                  videoId={PWA_INSTALL_VIDEO_IDS.android}
+                  title={t("landing.pwa.android_video_title")}
+                />
+              </div>
+            </article>
+          </div>
+
+          <p className="mx-auto mt-8 max-w-3xl rounded-xl border border-teal-500/30 bg-teal-500/10 px-4 py-3 text-center text-sm leading-relaxed text-teal-900 dark:text-teal-100">
+            {t("landing.pwa.noti_note")}
+          </p>
+        </div>
+      </section>
+
+      <section id="cta" className="scroll-mt-24 border-t border-border bg-muted/40">
         <div className="mx-auto w-full max-w-3xl px-4 py-16 sm:px-6 md:py-20">
           <div className="rounded-2xl bg-foreground px-8 py-10 text-center text-background shadow-lg sm:px-12 sm:py-12">
             <h2 className="text-3xl font-extrabold tracking-tight text-balance sm:text-4xl">

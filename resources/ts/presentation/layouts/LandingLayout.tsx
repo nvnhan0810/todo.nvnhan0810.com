@@ -34,6 +34,7 @@ const LandingLayout = ({ auth, children }: Props): React.ReactElement => {
     { label: t("landing.nav.problem"), href: "#problem" },
     { label: t("landing.nav.solution"), href: "#solution" },
     { label: t("landing.nav.why"), href: "#why" },
+    { label: t("landing.nav.pwa"), href: "#pwa" },
     { label: t("landing.nav.contact"), href: "#cta" },
   ];
 
@@ -104,7 +105,8 @@ const LandingLayout = ({ auth, children }: Props): React.ReactElement => {
             </div>
             <div className="text-sm text-muted-foreground sm:text-right">
               <p>{t("landing.footer_tagline")}</p>
-              <p className="mt-2">
+              <p className="mt-1 text-xs">
+                © {new Date().getFullYear()}{" "}
                 <a
                   href={PORTFOLIO_URL}
                   target="_blank"
@@ -113,9 +115,7 @@ const LandingLayout = ({ auth, children }: Props): React.ReactElement => {
                 >
                   {t("landing.footer_portfolio")}
                 </a>
-              </p>
-              <p className="mt-1 text-xs">
-                © {new Date().getFullYear()} Todo. {t("landing.footer_rights")}
+                . {t("landing.footer_rights")}
               </p>
             </div>
           </div>
