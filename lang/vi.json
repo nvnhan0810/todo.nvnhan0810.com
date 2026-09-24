@@ -51,6 +51,17 @@
   "auth.continue_sso": "Tiếp tục với nvnhan0810.com",
   "auth.continue_google": "Tiếp tục với Google",
 
+  "seo.landing_title": "Todo — Lên kế hoạch & hành động trên một màn hình",
+  "seo.landing_description": "Workspace web all-in-one: Ma trận Eisenhower + Pomodoro Timer. Cài PWA trên điện thoại và nhận thông báo khi phiên tập trung kết thúc.",
+  "seo.login_title": "Đăng nhập",
+  "seo.login_description": "Đăng nhập Todo để mở ma trận Eisenhower, Pomodoro và quản lý công việc của bạn.",
+  "seo.matrix_title": "Ma trận Eisenhower",
+  "seo.matrix_description": "Ưu tiên task theo 4 góc phần tư và chạy Pomodoro ngay trên cùng một màn hình.",
+  "seo.todos_title": "Todos",
+  "seo.todos_description": "Quản lý danh sách công việc trong Todo.",
+  "seo.projects_title": "Projects",
+  "seo.projects_description": "Quản lý dự án trong Todo.",
+
   "landing.brand_subtitle": "All-in-one workspace",
   "landing.chip": "Workspace web tất cả trong một",
   "landing.hero_title": "Lên Kế Hoạch & Hành Động. Tất Cả Trên Cùng Một Màn Hình.",

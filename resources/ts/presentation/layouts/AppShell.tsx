@@ -1,4 +1,4 @@
-import { Link, router } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import { LogOut, CheckSquare2, FolderKanban, LayoutGrid } from "lucide-react";
 import type { ReactNode } from "react";
 import { useRoute } from "ziggy-js";
@@ -6,6 +6,7 @@ import { LocaleToggle } from "@/ts/components/ui/locale-toggle";
 import { ThemeToggle } from "@/ts/components/ui/theme-toggle";
 import { Button } from "@/ts/components/ui/button";
 import { TooltipProvider } from "@/ts/components/ui/tooltip";
+import { SeoHead } from "@/ts/presentation/components/SeoHead";
 import { useTranslation } from "@/ts/presentation/i18n/useTranslation";
 import { cn } from "@/ts/utils";
 
@@ -23,6 +24,10 @@ export type RootProps = {
 type AppShellProps = RootProps & {
   children: ReactNode;
   title?: string;
+  /** SEO title; falls back to `title` or app name. */
+  seoTitle?: string;
+  seoDescription?: string;
+  seoPath?: string;
   /** Lock shell to the viewport so children can fill remaining height without page scroll. */
   fillViewport?: boolean;
 };
@@ -39,14 +44,29 @@ const AppShell = ({
   children,
   auth,
   title,
+  seoTitle,
+  seoDescription,
+  seoPath,
   fillViewport = false,
 }: AppShellProps): React.ReactElement => {
   const route = useRoute();
   const { t } = useTranslation();
-  const path = typeof window !== "undefined" ? window.location.pathname : "";
+  const page = usePage();
+  const path =
+    seoPath ??
+    (typeof page.url === "string" && page.url !== ""
+      ? page.url.split("?")[0] ?? "/"
+      : "/");
+  const navPath = typeof window !== "undefined" ? window.location.pathname : path;
 
   return (
     <TooltipProvider delayDuration={250}>
+      <SeoHead
+        title={seoTitle ?? title ?? "Todo"}
+        description={seoDescription ?? t("seo.matrix_description")}
+        path={path}
+        robots="noindex,nofollow"
+      />
       <div
         className={cn(
           "flex flex-col bg-background text-foreground",
@@ -56,19 +76,26 @@ const AppShell = ({
         <header className="shrink-0 border-b border-border bg-card">
           <div className="flex w-full items-center justify-between gap-4 px-4 py-3 sm:px-6">
             <div className="flex min-w-0 items-center gap-4">
-              <Link href={route("matrix.index")} className="shrink-0 font-semibold tracking-tight">
+              <Link href={route("matrix.index")} className="flex shrink-0 items-center gap-2 font-semibold tracking-tight">
+                <img
+                  src="/images/favicon-32x32.png"
+                  alt=""
+                  width={28}
+                  height={28}
+                  className="h-7 w-7 rounded-md"
+                />
                 Todo
               </Link>
               <nav className="hidden items-center gap-1 sm:flex">
-                <Link href={route("matrix.index")} className={navLinkClass(path.startsWith("/matrix"))}>
+                <Link href={route("matrix.index")} className={navLinkClass(navPath.startsWith("/matrix"))}>
                   <LayoutGrid className="h-4 w-4" />
                   {t("nav.matrix")}
                 </Link>
-                <Link href={route("todos.index")} className={navLinkClass(path.startsWith("/todos") && !path.includes("/projects"))}>
+                <Link href={route("todos.index")} className={navLinkClass(navPath.startsWith("/todos") && !navPath.includes("/projects"))}>
                   <CheckSquare2 className="h-4 w-4" />
                   {t("nav.todos")}
                 </Link>
-                <Link href={route("todos.projects.index")} className={navLinkClass(path.includes("/projects"))}>
+                <Link href={route("todos.projects.index")} className={navLinkClass(navPath.includes("/projects"))}>
                   <FolderKanban className="h-4 w-4" />
                   {t("nav.projects")}
                 </Link>

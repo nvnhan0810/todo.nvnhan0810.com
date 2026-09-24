@@ -2,6 +2,7 @@ import { Button } from "@/ts/components/ui/button";
 import { LocaleToggle } from "@/ts/components/ui/locale-toggle";
 import { ThemeToggle } from "@/ts/components/ui/theme-toggle";
 import { TooltipProvider } from "@/ts/components/ui/tooltip";
+import { SeoHead } from "@/ts/presentation/components/SeoHead";
 import { useTranslation } from "@/ts/presentation/i18n/useTranslation";
 import { useRoute } from "ziggy-js";
 
@@ -18,6 +19,11 @@ const LoginPage = ({ flash }: Props): React.ReactElement => {
 
   return (
     <TooltipProvider delayDuration={250}>
+      <SeoHead
+        title={t("seo.login_title")}
+        description={t("seo.login_description")}
+        path="/login"
+      />
       <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4">
         <div
           aria-hidden

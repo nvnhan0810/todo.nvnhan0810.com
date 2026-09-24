@@ -116,7 +116,12 @@ const ListPage = ({ auth, todos, projects, filters, statuses }: Props): React.Re
   ];
 
   return (
-    <AppShell auth={auth}>
+    <AppShell
+      auth={auth}
+      seoTitle={t("seo.todos_title")}
+      seoDescription={t("seo.todos_description")}
+      seoPath="/todos"
+    >
       <div className="mb-4 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-foreground">{t("todos.title")}</h1>
         <Button

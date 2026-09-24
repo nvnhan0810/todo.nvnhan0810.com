@@ -51,9 +51,13 @@ const LandingLayout = ({ auth, children }: Props): React.ReactElement => {
         >
           <div className="mx-auto flex h-[4.5rem] w-full max-w-6xl items-center gap-4 px-4 sm:px-6">
             <Link href={route("home")} className="flex min-w-0 items-center gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-foreground text-sm font-bold text-background">
-                Td
-              </span>
+              <img
+                src="/images/android-chrome-192x192.png"
+                alt=""
+                width={40}
+                height={40}
+                className="h-10 w-10 shrink-0 rounded-lg"
+              />
               <span className="min-w-0">
                 <span className="block text-sm font-semibold leading-tight">Todo</span>
                 <span className="block truncate text-xs text-muted-foreground">
@@ -95,9 +99,13 @@ const LandingLayout = ({ auth, children }: Props): React.ReactElement => {
         <footer className="border-t border-border bg-muted/40">
           <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-10 sm:flex-row sm:items-center sm:justify-between sm:px-6">
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-foreground text-xs font-bold text-background">
-                Td
-              </span>
+              <img
+                src="/images/android-chrome-192x192.png"
+                alt=""
+                width={36}
+                height={36}
+                className="h-9 w-9 rounded-lg"
+              />
               <div>
                 <div className="text-sm font-semibold">Todo</div>
                 <div className="text-xs text-muted-foreground">todo.nvnhan0810.com</div>

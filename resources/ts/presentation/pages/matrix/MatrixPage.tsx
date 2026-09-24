@@ -545,7 +545,13 @@ const MatrixPage = ({
   );
 
   return (
-    <AppShell auth={auth} fillViewport={!isFullscreen}>
+    <AppShell
+      auth={auth}
+      fillViewport={!isFullscreen}
+      seoTitle={t("seo.matrix_title")}
+      seoDescription={t("seo.matrix_description")}
+      seoPath="/matrix"
+    >
       {!isFullscreen ? (
         <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto scrollbar-hidden lg:overflow-hidden">
           {matrixChrome}

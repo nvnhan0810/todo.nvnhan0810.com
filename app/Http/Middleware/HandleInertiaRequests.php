@@ -33,6 +33,8 @@ class HandleInertiaRequests extends Middleware
             ],
             'locale' => Inertia::always(fn () => app()->getLocale()),
             'translations' => Inertia::always(fn () => $this->loadTranslations(app()->getLocale())),
+            'appName' => Inertia::always(fn () => (string) config('app.name')),
+            'appUrl' => Inertia::always(fn () => rtrim((string) config('app.url'), '/')),
             'googleAnalyticsId' => Inertia::always(function (): ?string {
                 $measurementId = config('services.google_analytics.measurement_id');
 

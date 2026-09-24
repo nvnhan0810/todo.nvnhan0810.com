@@ -1,9 +1,10 @@
 import { Button } from "@/ts/components/ui/button";
 import type { RootProps } from "@/ts/presentation/layouts/AppShell";
 import LandingLayout from "@/ts/presentation/layouts/LandingLayout";
+import { SeoHead } from "@/ts/presentation/components/SeoHead";
 import { YoutubeEmbed } from "@/ts/presentation/components/YoutubeEmbed";
 import { useTranslation } from "@/ts/presentation/i18n/useTranslation";
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import {
   ArrowRight,
   Bell,
@@ -33,6 +34,7 @@ const LandingPage = ({ auth }: Props): React.ReactElement => {
   const { t } = useTranslation();
   const route = useRoute();
   const isAuthenticated = auth !== null;
+  const { appUrl = "" } = usePage().props as { appUrl?: string };
 
   const problems = [
     {
@@ -157,6 +159,26 @@ const LandingPage = ({ auth }: Props): React.ReactElement => {
 
   return (
     <LandingLayout auth={auth}>
+      <SeoHead
+        title={t("seo.landing_title")}
+        description={t("seo.landing_description")}
+        path="/"
+        appendSiteName={false}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          name: "Todo",
+          applicationCategory: "ProductivityApplication",
+          operatingSystem: "Web, iOS, Android",
+          description: t("seo.landing_description"),
+          url: appUrl || "https://todo.nvnhan0810.com",
+          offers: {
+            "@type": "Offer",
+            price: "0",
+            priceCurrency: "USD",
+          },
+        }}
+      />
       <section className="relative overflow-hidden border-b border-border">
         <div
           aria-hidden

@@ -30,7 +30,12 @@ const ListPage = ({ auth, projects }: Props): React.ReactElement => {
   };
 
   return (
-    <AppShell auth={auth}>
+    <AppShell
+      auth={auth}
+      seoTitle={t("seo.projects_title")}
+      seoDescription={t("seo.projects_description")}
+      seoPath="/todos/projects"
+    >
       <div className="mb-4 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-foreground">{t("projects.title")}</h1>
         <Button variant="outline" onClick={() => router.get(route("todos.projects.create"))}>

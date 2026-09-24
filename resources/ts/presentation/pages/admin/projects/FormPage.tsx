@@ -32,7 +32,14 @@ const FormPage = ({ auth, project }: Props): React.ReactElement => {
   };
 
   return (
-    <AppShell auth={auth}>
+    <AppShell
+      auth={auth}
+      seoTitle={isEdit ? t("projects.edit_title") : t("projects.create_title")}
+      seoDescription={t("seo.projects_description")}
+      seoPath={
+        isEdit && project ? `/todos/projects/${project.id}/edit` : "/todos/projects/create"
+      }
+    >
       <h1 className="mb-4 text-2xl font-bold text-foreground">
         {isEdit ? t("projects.edit_title") : t("projects.create_title")}
       </h1>

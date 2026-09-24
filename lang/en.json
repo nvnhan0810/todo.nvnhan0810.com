@@ -51,6 +51,17 @@
   "auth.continue_sso": "Continue with nvnhan0810.com",
   "auth.continue_google": "Continue with Google",
 
+  "seo.landing_title": "Todo — Plan & Act on One Screen",
+  "seo.landing_description": "All-in-one web workspace: Eisenhower Matrix + Pomodoro Timer. Install the PWA on your phone and get notified when a focus session ends.",
+  "seo.login_title": "Log in",
+  "seo.login_description": "Sign in to Todo to open your Eisenhower matrix, Pomodoro timer, and tasks.",
+  "seo.matrix_title": "Eisenhower Matrix",
+  "seo.matrix_description": "Prioritize tasks in four quadrants and run Pomodoro on the same screen.",
+  "seo.todos_title": "Todos",
+  "seo.todos_description": "Manage your task list in Todo.",
+  "seo.projects_title": "Projects",
+  "seo.projects_description": "Manage your projects in Todo.",
+
   "landing.brand_subtitle": "All-in-one workspace",
   "landing.chip": "All-in-one web workspace",
   "landing.hero_title": "Plan & Act. All on One Screen.",

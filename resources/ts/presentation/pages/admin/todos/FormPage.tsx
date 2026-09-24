@@ -54,7 +54,12 @@ const FormPage = ({
   };
 
   return (
-    <AppShell auth={auth}>
+    <AppShell
+      auth={auth}
+      seoTitle={isEdit ? t("todos.edit_title") : t("todos.create_title")}
+      seoDescription={t("seo.todos_description")}
+      seoPath={isEdit && todo ? `/todos/${todo.id}/edit` : "/todos/create"}
+    >
       <h1 className="mb-4 text-2xl font-bold text-foreground">
         {isEdit ? t("todos.edit_title") : t("todos.create_title")}
       </h1>
