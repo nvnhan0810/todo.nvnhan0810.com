@@ -5,6 +5,7 @@ import { useRoute } from "ziggy-js";
 import { sortMatrixTodos } from "@/ts/application/matrixTodoOrder";
 import type { PomodoroPhase } from "@/ts/domain/constants/pomodoro";
 import type { TodoItem } from "@/ts/domain/todo";
+import { useTranslation } from "@/ts/presentation/i18n/useTranslation";
 import MatrixCard from "./MatrixCard";
 import type { QuadrantMeta } from "./quadrants";
 
@@ -30,6 +31,7 @@ const MatrixQuadrant = ({
   pomodoroPhase,
 }: Props): React.ReactElement => {
   const route = useRoute();
+  const { t } = useTranslation();
   const [isOver, setIsOver] = useState(false);
   const suppressClickRef = useRef(false);
   const orderedTodos = sortMatrixTodos(todos);
@@ -74,7 +76,7 @@ const MatrixQuadrant = ({
       }}
       onDragLeave={() => setIsOver(false)}
       onDrop={onDrop}
-      title="Click để tạo todo trong vùng này"
+      title={t("matrix.quadrant_create_hint")}
       className={cn(
         "flex h-64 flex-col overflow-hidden rounded-lg border-2 border-dashed p-3 transition-colors duration-200 cursor-pointer sm:h-72 lg:h-full lg:min-h-0",
         meta.accent,
@@ -84,9 +86,11 @@ const MatrixQuadrant = ({
     >
       <header className="mb-3 flex items-baseline justify-between gap-2 shrink-0 pointer-events-none">
         <div>
-          <h2 className={cn("text-base font-semibold", meta.header)}>{meta.title}</h2>
+          <h2 className={cn("text-base font-semibold", meta.header)}>
+            {t(`quadrant.${meta.key}.title`)}
+          </h2>
           <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-            {meta.subtitle}
+            {t(`quadrant.${meta.key}.subtitle`)}
           </p>
         </div>
         <span className="rounded-full bg-muted px-2 py-0.5 text-xs tabular-nums text-muted-foreground">
@@ -97,7 +101,7 @@ const MatrixQuadrant = ({
       <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto scrollbar-hidden">
         {orderedTodos.length === 0 && (
           <p className="mt-6 text-center text-xs text-muted-foreground pointer-events-none">
-            Click để tạo · hoặc kéo todo vào đây
+            {t("matrix.quadrant_empty")}
           </p>
         )}
         {orderedTodos.map((todo) => (

@@ -18,8 +18,9 @@ import { cn } from "@ts/utils";
 import { router } from "@inertiajs/react";
 import { useEffect, useState } from "react";
 import { useRoute } from "ziggy-js";
-import { TODO_PRIORITY_LABEL } from "@/ts/domain/constants/labels";
+import { todoPriorityLabel } from "@/ts/domain/constants/labels";
 import type { TodoItem, TodoPriority, TodoProject } from "@/ts/domain/todo";
+import { useTranslation } from "@/ts/presentation/i18n/useTranslation";
 
 type SelectionState = {
   selected: boolean;
@@ -51,6 +52,7 @@ const BacklogPromoteDialog = ({
   onEditTodo,
 }: Props): React.ReactElement => {
   const route = useRoute();
+  const { t } = useTranslation();
   const [projectFilter, setProjectFilter] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("");
   const [selections, setSelections] = useState<Record<number, SelectionState>>(
@@ -68,7 +70,7 @@ const BacklogPromoteDialog = ({
   }, [open, backlog]);
 
   const projectOptions = [
-    { value: "", label: "Tất cả project" },
+    { value: "", label: t("backlog.all_projects") },
     ...projects.map((project) => ({
       value: String(project.id),
       label: project.name,
@@ -76,10 +78,10 @@ const BacklogPromoteDialog = ({
   ];
 
   const priorityOptions = [
-    { value: "", label: "Tất cả priority" },
+    { value: "", label: t("backlog.all_priorities") },
     ...priorities.map((priority) => ({
       value: priority,
-      label: TODO_PRIORITY_LABEL[priority],
+      label: todoPriorityLabel(t, priority),
     })),
   ];
 
@@ -142,10 +144,8 @@ const BacklogPromoteDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col z-[210] gap-3">
         <DialogHeader>
-          <DialogTitle>Backlog → Matrix</DialogTitle>
-          <DialogDescription>
-            Chọn todo, gán Urgent / Important, rồi đưa vào Matrix (status Todo).
-          </DialogDescription>
+          <DialogTitle>{t("backlog.title")}</DialogTitle>
+          <DialogDescription>{t("backlog.description")}</DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-wrap gap-3 shrink-0">
@@ -154,8 +154,8 @@ const BacklogPromoteDialog = ({
               options={projectOptions}
               value={projectFilter}
               handleChange={setProjectFilter}
-              placeholder="Tất cả project"
-              searchPlaceholder="Tìm project..."
+              placeholder={t("backlog.all_projects")}
+              searchPlaceholder={t("backlog.search_project")}
               contentClassName="z-[240]"
             />
           </div>
@@ -164,20 +164,24 @@ const BacklogPromoteDialog = ({
               options={priorityOptions}
               value={priorityFilter}
               handleChange={setPriorityFilter}
-              placeholder="Tất cả priority"
-              searchPlaceholder="Tìm priority..."
+              placeholder={t("backlog.all_priorities")}
+              searchPlaceholder={t("backlog.search_priority")}
               contentClassName="z-[240]"
             />
           </div>
           <p className="text-xs text-muted-foreground self-center ml-auto">
-            {filtered.length} / {backlog.length} · đã chọn {selectedItems.length}
+            {t("backlog.counts", {
+              filtered: filtered.length,
+              total: backlog.length,
+              selected: selectedItems.length,
+            })}
           </p>
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto -mx-1 px-1 space-y-2">
           {filtered.length === 0 && (
             <p className="py-10 text-center text-sm text-muted-foreground">
-              Không có todo backlog phù hợp filter.
+              {t("backlog.empty")}
             </p>
           )}
 
@@ -205,14 +209,14 @@ const BacklogPromoteDialog = ({
 
         <DialogFooter className="shrink-0">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-            Đóng
+            {t("common.close")}
           </Button>
           <Button
             type="button"
             disabled={processing || selectedItems.length === 0}
             onClick={submit}
           >
-            Đưa vào Matrix ({selectedItems.length})
+            {t("backlog.promote", { count: selectedItems.length })}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -237,6 +241,7 @@ const BacklogRow = ({
   onToggleImportant,
   onEdit,
 }: RowProps): React.ReactElement => {
+  const { t } = useTranslation();
   const enabled = selection.selected;
 
   return (
@@ -251,7 +256,7 @@ const BacklogRow = ({
           className="mt-1"
           checked={selection.selected}
           onCheckedChange={(value) => onToggleSelected(value === true)}
-          aria-label={`Chọn ${todo.title}`}
+          aria-label={t("backlog.select", { title: todo.title })}
         />
 
         <div className="min-w-0 flex-1">
@@ -261,7 +266,7 @@ const BacklogRow = ({
                 type="button"
                 onClick={onEdit}
                 className="text-left text-sm font-medium text-foreground hover:text-sky-700 dark:hover:text-sky-300 transition-colors cursor-pointer truncate max-w-full"
-                aria-label={`Sửa ${todo.title}`}
+                aria-label={t("backlog.edit", { title: todo.title })}
               >
                 {todo.title}
               </button>
@@ -278,18 +283,18 @@ const BacklogRow = ({
               <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
                 {todo.project?.name && <span>{todo.project.name}</span>}
                 <span className="uppercase tracking-wide">
-                  {TODO_PRIORITY_LABEL[todo.priority]}
+                  {todoPriorityLabel(t, todo.priority)}
                 </span>
                 {todo.due_at && (
                   <span className="tabular-nums">
-                    Due {todo.due_at.slice(0, 10)}
+                    {t("common.due", { date: todo.due_at.slice(0, 10) })}
                   </span>
                 )}
               </div>
               <p className="text-xs text-muted-foreground whitespace-pre-wrap break-words max-h-40 overflow-y-auto">
                 {todo.description?.trim()
                   ? todo.description
-                  : "Không có mô tả."}
+                  : t("backlog.no_description")}
               </p>
             </HoverCardContent>
           </HoverCard>
@@ -297,10 +302,12 @@ const BacklogRow = ({
           <div className="flex flex-wrap items-center gap-2 mt-0.5 text-[11px] text-muted-foreground">
             {todo.project?.name && <span>{todo.project.name}</span>}
             <span className="uppercase tracking-wide">
-              {TODO_PRIORITY_LABEL[todo.priority]}
+              {todoPriorityLabel(t, todo.priority)}
             </span>
             {todo.due_at && (
-              <span className="tabular-nums">Due {todo.due_at.slice(0, 10)}</span>
+              <span className="tabular-nums">
+                {t("common.due", { date: todo.due_at.slice(0, 10) })}
+              </span>
             )}
           </div>
         </div>
@@ -317,7 +324,7 @@ const BacklogRow = ({
               disabled={!enabled}
               onCheckedChange={(value) => onToggleUrgent(value === true)}
             />
-            Urgent
+            {t("common.urgent")}
           </label>
           <label
             className={cn(
@@ -330,7 +337,7 @@ const BacklogRow = ({
               disabled={!enabled}
               onCheckedChange={(value) => onToggleImportant(value === true)}
             />
-            Important
+            {t("common.important")}
           </label>
         </div>
       </div>

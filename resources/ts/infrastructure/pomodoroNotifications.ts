@@ -1,7 +1,5 @@
-import {
-  POMODORO_PHASE_LABEL,
-  type PomodoroPhase,
-} from "@/ts/domain/constants/pomodoro";
+import { type PomodoroPhase } from "@/ts/domain/constants/pomodoro";
+import { translate } from "@/ts/presentation/i18n/catalog";
 import { getCurrentPushSubscription } from "./webPushClient";
 
 const NOTIFICATION_TAG = "todo-pomodoro-phase";
@@ -64,13 +62,16 @@ export const notifyPomodoroPhaseEnd = ({
       // Fall through to local Notification.
     }
 
-    const fromLabel = POMODORO_PHASE_LABEL[fromPhase];
-    const toLabel = POMODORO_PHASE_LABEL[toPhase];
+    const fromLabel = translate(`pomodoro.phase.${fromPhase}`);
+    const toLabel = translate(`pomodoro.phase.${toPhase}`);
     const title =
       fromPhase === "focus"
-        ? "Hết phiên tập trung"
-        : "Hết giờ nghỉ";
-    const body = `${fromLabel} → ${toLabel}. Bấm để quay lại Todo.`;
+        ? translate("pomodoro.notify.focus_end")
+        : translate("pomodoro.notify.break_end");
+    const body = translate("pomodoro.notify.body", {
+      from: fromLabel,
+      to: toLabel,
+    });
 
     try {
       const notification = new Notification(title, {

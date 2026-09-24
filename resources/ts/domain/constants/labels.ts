@@ -1,16 +1,19 @@
 import type { TodoPriority, TodoStatus } from "@/ts/domain/todo";
 
-export const TODO_STATUS_LABEL: Record<TodoStatus, string> = {
-  backlog: "Backlog",
-  todo: "Todo",
-  in_progress: "In progress",
-  done: "Done",
-  rejected: "Rejected",
-};
+type TranslateFn = (
+  key: string,
+  replacements?: Record<string, string | number>,
+) => string;
 
-export const TODO_PRIORITY_LABEL: Record<TodoPriority, string> = {
-  low: "Low",
-  medium: "Medium",
-  high: "High",
-  urgent: "Urgent",
-};
+export const todoStatusLabel = (t: TranslateFn, status: TodoStatus): string =>
+  t(`status.${status}`);
+
+export const todoPriorityLabel = (
+  t: TranslateFn,
+  priority: TodoPriority,
+): string => t(`priority.${priority}`);
+
+export const todoPriorityShortLabel = (
+  t: TranslateFn,
+  priority: TodoPriority,
+): string => t(`priority_short.${priority}`);

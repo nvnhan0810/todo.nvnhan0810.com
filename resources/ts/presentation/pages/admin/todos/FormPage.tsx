@@ -3,8 +3,8 @@ import { router, useForm } from "@inertiajs/react";
 import AppShell, { type RootProps } from "@/ts/presentation/layouts/AppShell";
 import { useRoute } from "ziggy-js";
 import TodoFormFields from "@/ts/presentation/components/TodoFormFields";
-import TodoNav from "@/ts/presentation/components/TodoNav";
 import type { TodoItem, TodoPriority, TodoProject, TodoStatus } from "@/ts/domain/todo";
+import { useTranslation } from "@/ts/presentation/i18n/useTranslation";
 
 type Props = RootProps & {
   todo: TodoItem | null;
@@ -30,6 +30,7 @@ const FormPage = ({
   default_project_id,
 }: Props): React.ReactElement => {
   const route = useRoute();
+  const { t } = useTranslation();
   const isEdit = Boolean(todo?.id);
 
   const { data, setData, post, put, processing, errors } = useForm({
@@ -54,7 +55,9 @@ const FormPage = ({
 
   return (
     <AppShell auth={auth}>
-      <h1 className="mb-4 text-2xl font-bold text-foreground">{isEdit ? "Sửa todo" : "Tạo todo"}</h1>
+      <h1 className="mb-4 text-2xl font-bold text-foreground">
+        {isEdit ? t("todos.edit_title") : t("todos.create_title")}
+      </h1>
 
       <form onSubmit={submit} className="max-w-2xl space-y-4">
         <TodoFormFields
@@ -70,10 +73,10 @@ const FormPage = ({
 
         <div className="flex gap-2">
           <Button type="submit" disabled={processing}>
-            Lưu
+            {t("common.save")}
           </Button>
           <Button type="button" variant="outline" onClick={() => router.get(route("todos.index"))}>
-            Hủy
+            {t("common.cancel")}
           </Button>
         </div>
       </form>

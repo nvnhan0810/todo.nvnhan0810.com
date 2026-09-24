@@ -1,8 +1,8 @@
 import {
   formatTimer,
-  POMODORO_PHASE_LABEL,
   type PomodoroPhase,
 } from "@/ts/domain/constants/pomodoro";
+import { translate } from "@/ts/presentation/i18n/catalog";
 import { POMODORO_COUNTDOWN_WARN_SECONDS } from "./pomodoroAudio";
 
 const WORK_GIF = "/images/todos/work.gif";
@@ -98,7 +98,7 @@ const ensureGifElement = (phase: PomodoroPhase): HTMLImageElement => {
 };
 
 const buildTitle = (state: PresenceState): string => {
-  const label = POMODORO_PHASE_LABEL[state.phase];
+  const label = translate(`pomodoro.phase.${state.phase}`);
   const timer = formatTimer(state.remainingMs);
   const secondsLeft = Math.ceil(state.remainingMs / 1000);
   const urgent =

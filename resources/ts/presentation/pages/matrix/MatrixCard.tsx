@@ -7,10 +7,12 @@ import {
 import { cn } from "@ts/utils";
 import { Play } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { todoPriorityShortLabel } from "@/ts/domain/constants/labels";
 import type { PomodoroPhase } from "@/ts/domain/constants/pomodoro";
 import type { TodoItem } from "@/ts/domain/todo";
+import { useTranslation } from "@/ts/presentation/i18n/useTranslation";
 import PomodoroPhaseGif from "./PomodoroPhaseGif";
-import { priorityLabel, statusStyles } from "./quadrants";
+import { statusStyles } from "./quadrants";
 
 type Props = {
   todo: TodoItem;
@@ -29,6 +31,7 @@ const MatrixCard = ({
   isHighlighted,
   pomodoroPhase,
 }: Props): React.ReactElement => {
+  const { t } = useTranslation();
   const status = todo.status === "in_progress" ? "in_progress" : "todo";
   const style = statusStyles[status];
   const didDragRef = useRef(false);
@@ -85,7 +88,9 @@ const MatrixCard = ({
               <span className="truncate max-w-[10rem]">{todo.project.name}</span>
             )}
             {todo.due_at && (
-              <span className="tabular-nums">Due {todo.due_at.slice(0, 10)}</span>
+              <span className="tabular-nums">
+                {t("common.due", { date: todo.due_at.slice(0, 10) })}
+              </span>
             )}
           </div>
         </div>
@@ -95,7 +100,7 @@ const MatrixCard = ({
             <PomodoroPhaseGif phase={pomodoroPhase} size="sm" />
           )}
           <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
-            {priorityLabel[todo.priority]}
+            {todoPriorityShortLabel(t, todo.priority)}
           </span>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -104,7 +109,7 @@ const MatrixCard = ({
                 variant="ghost"
                 size="sm"
                 className="h-6 w-6 cursor-pointer p-0 text-rose-600/80 hover:text-rose-700 dark:text-rose-300/90 dark:hover:text-rose-200"
-                aria-label="Chọn todo cho Pomodoro"
+                aria-label={t("matrix.card_pomodoro")}
                 onClick={(event) => {
                   event.stopPropagation();
                   onSelectForPomodoro(todo);
@@ -113,7 +118,7 @@ const MatrixCard = ({
                 <Play className="w-3.5 h-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="left">Làm todo này (Pomodoro)</TooltipContent>
+            <TooltipContent side="left">{t("matrix.card_pomodoro_tip")}</TooltipContent>
           </Tooltip>
         </div>
       </div>

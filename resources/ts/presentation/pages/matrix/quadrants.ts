@@ -1,11 +1,9 @@
-import type { MatrixQuadrantKey, TodoPriority, TodoStatus } from "@/ts/domain/todo";
+import type { MatrixQuadrantKey, TodoStatus } from "@/ts/domain/todo";
 
 export type { MatrixQuadrantKey, MatrixQuadrants } from "@/ts/domain/todo";
 
 export type QuadrantMeta = {
   key: MatrixQuadrantKey;
-  title: string;
-  subtitle: string;
   is_urgent: boolean;
   is_important: boolean;
   accent: string;
@@ -16,8 +14,6 @@ export type QuadrantMeta = {
 export const QUADRANTS: QuadrantMeta[] = [
   {
     key: "do",
-    title: "Làm ngay",
-    subtitle: "Urgent · Important",
     is_urgent: true,
     is_important: true,
     accent: "border-rose-300 dark:border-rose-800",
@@ -26,8 +22,6 @@ export const QUADRANTS: QuadrantMeta[] = [
   },
   {
     key: "schedule",
-    title: "Lên lịch",
-    subtitle: "Not urgent · Important",
     is_urgent: false,
     is_important: true,
     accent: "border-teal-300 dark:border-teal-800",
@@ -36,8 +30,6 @@ export const QUADRANTS: QuadrantMeta[] = [
   },
   {
     key: "delegate",
-    title: "Giao việc",
-    subtitle: "Urgent · Not important",
     is_urgent: true,
     is_important: false,
     accent: "border-amber-300 dark:border-amber-800",
@@ -46,8 +38,6 @@ export const QUADRANTS: QuadrantMeta[] = [
   },
   {
     key: "eliminate",
-    title: "Loại bỏ",
-    subtitle: "Not urgent · Not important",
     is_urgent: false,
     is_important: false,
     accent: "border-slate-300 dark:border-slate-700",
@@ -55,13 +45,6 @@ export const QUADRANTS: QuadrantMeta[] = [
     header: "text-slate-700 dark:text-slate-200",
   },
 ];
-
-export const priorityLabel: Record<TodoPriority, string> = {
-  low: "Low",
-  medium: "Med",
-  high: "High",
-  urgent: "Urgent",
-};
 
 export const statusStyles: Record<
   Extract<TodoStatus, "todo" | "in_progress">,

@@ -9,6 +9,7 @@ import {
 } from "@/ts/components/ui/dialog";
 import { Input } from "@/ts/components/ui/input";
 import { Label } from "@/ts/components/ui/label";
+import { useTranslation } from "@/ts/presentation/i18n/useTranslation";
 import { useEffect, useState } from "react";
 import {
   DEFAULT_POMODORO_SETTINGS,
@@ -30,6 +31,7 @@ const PomodoroSettingsDialog = ({
   isTimerRunning,
   onSave,
 }: Props): React.ReactElement => {
+  const { t } = useTranslation();
   const [form, setForm] = useState<PomodoroSettings>(DEFAULT_POMODORO_SETTINGS);
 
   useEffect(() => {
@@ -71,17 +73,17 @@ const PomodoroSettingsDialog = ({
       <DialogContent className="max-w-md z-[220]">
         <form onSubmit={submit} className="space-y-4">
           <DialogHeader>
-            <DialogTitle>Pomodoro settings</DialogTitle>
+            <DialogTitle>{t("pomodoro.settings_title")}</DialogTitle>
             <DialogDescription>
               {isTimerRunning
-                ? "Timer đang chạy — giá trị mới áp dụng từ phase kế tiếp (đồng bộ mọi thiết bị)."
-                : "Đồng bộ settings trên mọi thiết bị đã đăng nhập."}
+                ? t("pomodoro.settings_running")
+                : t("pomodoro.settings_idle")}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             <div>
-              <Label htmlFor="pomodoro-focus">(1) Tập trung (phút)</Label>
+              <Label htmlFor="pomodoro-focus">{t("pomodoro.focus_minutes")}</Label>
               <Input
                 id="pomodoro-focus"
                 type="number"
@@ -92,7 +94,7 @@ const PomodoroSettingsDialog = ({
               />
             </div>
             <div>
-              <Label htmlFor="pomodoro-short">(2) Nghỉ ngắn (phút)</Label>
+              <Label htmlFor="pomodoro-short">{t("pomodoro.short_break_minutes")}</Label>
               <Input
                 id="pomodoro-short"
                 type="number"
@@ -106,7 +108,7 @@ const PomodoroSettingsDialog = ({
             </div>
             <div>
               <Label htmlFor="pomodoro-sessions">
-                (3) Số lần tập trung trước nghỉ dài
+                {t("pomodoro.sessions_before_long")}
               </Label>
               <Input
                 id="pomodoro-sessions"
@@ -120,7 +122,7 @@ const PomodoroSettingsDialog = ({
               />
             </div>
             <div>
-              <Label htmlFor="pomodoro-long">(4) Nghỉ dài (phút)</Label>
+              <Label htmlFor="pomodoro-long">{t("pomodoro.long_break_minutes")}</Label>
               <Input
                 id="pomodoro-long"
                 type="number"
@@ -140,9 +142,9 @@ const PomodoroSettingsDialog = ({
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Hủy
+              {t("common.cancel")}
             </Button>
-            <Button type="submit">Lưu</Button>
+            <Button type="submit">{t("common.save")}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

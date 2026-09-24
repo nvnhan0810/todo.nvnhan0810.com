@@ -1,9 +1,12 @@
 import { Link, router } from "@inertiajs/react";
 import { LogOut, CheckSquare2, FolderKanban, LayoutGrid } from "lucide-react";
 import type { ReactNode } from "react";
+import { useRoute } from "ziggy-js";
+import { LocaleToggle } from "@/ts/components/ui/locale-toggle";
 import { ThemeToggle } from "@/ts/components/ui/theme-toggle";
 import { Button } from "@/ts/components/ui/button";
 import { TooltipProvider } from "@/ts/components/ui/tooltip";
+import { useTranslation } from "@/ts/presentation/i18n/useTranslation";
 import { cn } from "@/ts/utils";
 
 export type AuthUser = {
@@ -38,6 +41,8 @@ const AppShell = ({
   title,
   fillViewport = false,
 }: AppShellProps): React.ReactElement => {
+  const route = useRoute();
+  const { t } = useTranslation();
   const path = typeof window !== "undefined" ? window.location.pathname : "";
 
   return (
@@ -57,20 +62,21 @@ const AppShell = ({
               <nav className="hidden items-center gap-1 sm:flex">
                 <Link href={route("matrix.index")} className={navLinkClass(path.startsWith("/matrix"))}>
                   <LayoutGrid className="h-4 w-4" />
-                  Matrix
+                  {t("nav.matrix")}
                 </Link>
                 <Link href={route("todos.index")} className={navLinkClass(path.startsWith("/todos") && !path.includes("/projects"))}>
                   <CheckSquare2 className="h-4 w-4" />
-                  Todos
+                  {t("nav.todos")}
                 </Link>
                 <Link href={route("todos.projects.index")} className={navLinkClass(path.includes("/projects"))}>
                   <FolderKanban className="h-4 w-4" />
-                  Projects
+                  {t("nav.projects")}
                 </Link>
               </nav>
               {title ? <span className="truncate text-sm text-muted-foreground sm:hidden">{title}</span> : null}
             </div>
             <div className="flex items-center gap-2">
+              <LocaleToggle />
               <ThemeToggle />
               {auth ? (
                 <div className="flex items-center gap-2">
@@ -81,7 +87,7 @@ const AppShell = ({
                     type="button"
                     variant="ghost"
                     size="icon"
-                    title="Đăng xuất"
+                    title={t("nav.logout")}
                     onClick={() => router.post(route("logout"))}
                   >
                     <LogOut className="h-4 w-4" />

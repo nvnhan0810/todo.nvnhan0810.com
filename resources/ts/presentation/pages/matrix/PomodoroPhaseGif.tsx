@@ -1,5 +1,6 @@
 import { cn } from "@ts/utils";
 import type { PomodoroPhase } from "@/ts/domain/constants/pomodoro";
+import { useTranslation } from "@/ts/presentation/i18n/useTranslation";
 
 type Props = {
   phase: PomodoroPhase;
@@ -17,9 +18,10 @@ const PomodoroPhaseGif = ({
   className,
   size = "sm",
 }: Props): React.ReactElement => {
+  const { t } = useTranslation();
   const focus = isFocusPhase(phase);
   const src = focus ? WORK_SRC : RELAX_SRC;
-  const label = focus ? "Focus" : "Relax";
+  const label = focus ? t("pomodoro.gif.focus") : t("pomodoro.gif.relax");
   const dimension = size === "md" ? "h-12 w-12" : "h-8 w-8";
 
   return (

@@ -4,6 +4,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/ts/components/ui/tooltip";
+import { useTranslation } from "@/ts/presentation/i18n/useTranslation";
 import { useTheme } from "@/ts/providers/theme-provider";
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -17,6 +18,7 @@ type Props = {
  */
 export const ThemeToggle = ({ className }: Props): React.ReactElement => {
   const { theme, setTheme } = useTheme();
+  const { t } = useTranslation();
   const [isDark, setIsDark] = useState(theme === "dark");
 
   useEffect(() => {
@@ -39,14 +41,14 @@ export const ThemeToggle = ({ className }: Props): React.ReactElement => {
           variant="outline"
           size="sm"
           className={className ?? "cursor-pointer"}
-          aria-label={isDark ? "Chuyển light theme" : "Chuyển dark theme"}
+          aria-label={isDark ? t("theme.to_light") : t("theme.to_dark")}
           onClick={() => setTheme(isDark ? "light" : "dark")}
         >
           {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
         </Button>
       </TooltipTrigger>
       <TooltipContent side="bottom">
-        {isDark ? "Light" : "Dark"}
+        {isDark ? t("theme.light") : t("theme.dark")}
       </TooltipContent>
     </Tooltip>
   );

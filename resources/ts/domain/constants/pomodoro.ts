@@ -18,12 +18,6 @@ export const DEFAULT_POMODORO_SETTINGS: PomodoroSettings = {
   longBreakMinutes: 15,
 };
 
-export const POMODORO_PHASE_LABEL: Record<PomodoroPhase, string> = {
-  focus: "Tập trung",
-  short_break: "Nghỉ ngắn",
-  long_break: "Nghỉ dài",
-};
-
 export const POMODORO_STORAGE_SETTINGS_KEY = "todo.pomodoro.settings";
 export const POMODORO_STORAGE_RUNTIME_KEY = "todo.pomodoro.runtime";
 

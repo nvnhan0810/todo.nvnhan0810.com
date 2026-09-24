@@ -11,6 +11,7 @@ import { useForm } from "@inertiajs/react";
 import { useEffect, useState } from "react";
 import { useRoute } from "ziggy-js";
 import type { TodoItem, TodoPriority, TodoProject, TodoStatus } from "@/ts/domain/todo";
+import { useTranslation } from "@/ts/presentation/i18n/useTranslation";
 import ProjectFormModal, {
   type CreatedProjectOption,
 } from "./ProjectFormModal";
@@ -126,6 +127,7 @@ const TodoFormModalBody = ({
   onClose,
 }: BodyProps): React.ReactElement => {
   const route = useRoute();
+  const { t } = useTranslation();
   const isEdit = mode === "edit" && Boolean(todo?.id);
   const [projectCreateOpen, setProjectCreateOpen] = useState(false);
   const [projectOptions, setProjectOptions] = useState(projects);
@@ -181,11 +183,9 @@ const TodoFormModalBody = ({
     <>
       <form onSubmit={submit} className="space-y-4">
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Sửa todo" : "Tạo todo"}</DialogTitle>
+          <DialogTitle>{isEdit ? t("todos.edit_title") : t("todos.create_title")}</DialogTitle>
           <DialogDescription>
-            {isEdit
-              ? "Cập nhật thông tin todo. Các trường đều chỉnh sửa được."
-              : "Giá trị mặc định lấy từ vùng Matrix bạn vừa chọn — vẫn chỉnh sửa bình thường."}
+            {isEdit ? t("todos.edit_description") : t("todos.create_description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -203,10 +203,10 @@ const TodoFormModalBody = ({
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onClose}>
-            Hủy
+            {t("common.cancel")}
           </Button>
           <Button type="submit" disabled={processing}>
-            Lưu
+            {t("common.save")}
           </Button>
         </DialogFooter>
       </form>

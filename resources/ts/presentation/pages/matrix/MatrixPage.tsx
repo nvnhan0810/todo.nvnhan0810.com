@@ -13,6 +13,7 @@ import {
 } from "@/ts/components/ui/tooltip";
 import { ThemeToggle } from "@/ts/components/ui/theme-toggle";
 import AppShell, { type RootProps } from "@/ts/presentation/layouts/AppShell";
+import { useTranslation } from "@/ts/presentation/i18n/useTranslation";
 import { cn } from "@ts/utils";
 import { router, usePage } from "@inertiajs/react";
 import {
@@ -28,9 +29,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRoute } from "ziggy-js";
-import TodoFormModal, {
-  type TodoCreateDefaults,
-} from "@/ts/presentation/components/TodoFormModal";
+import TodoFormModal, { type TodoCreateDefaults } from "@/ts/presentation/components/TodoFormModal";
 import { pickNextMatrixTodo } from "@/ts/application/matrixTodoOrder";
 import { useMatrixSse } from "@/ts/presentation/hooks/useMatrixSse";
 import { usePomodoro } from "@/ts/presentation/hooks/usePomodoro";
@@ -58,9 +57,7 @@ type PageShared = {
   webPush?: SharedWebPush;
 };
 type ModalState =
-  | { mode: "create"; defaults: TodoCreateDefaults }
-  | { mode: "edit"; todo: TodoItem }
-  | null;
+  { mode: "create"; defaults: TodoCreateDefaults } | { mode: "edit"; todo: TodoItem } | null;
 
 type Props = RootProps & {
   quadrants: MatrixQuadrants;
@@ -92,7 +89,7 @@ const MatrixGrid = ({
   highlightedTodoId,
   pomodoroPhase,
 }: GridProps): React.ReactElement => (
-  <div className="grid h-full min-h-0 grid-cols-1 gap-3 lg:grid-cols-2 lg:grid-rows-2">
+  <div className="grid h-full min-h-0 grid-cols-1 gap-3 lg:grid-cols-2 lg:grid-rows-[minmax(0,1fr)_minmax(0,1fr)]">
     {QUADRANTS.map((meta) => (
       <MatrixQuadrant
         key={meta.key}
@@ -157,6 +154,7 @@ const MatrixPage = ({
   backlog,
 }: Props): React.ReactElement => {
   const route = useRoute();
+  const { t } = useTranslation();
   const page = usePage<PageShared>();
   const sharedWebPush = page.props.webPush ?? null;
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -179,8 +177,7 @@ const MatrixPage = ({
   });
   const webPush = useWebPush({
     configured: sharedWebPush?.configured === true,
-    publicKey:
-      typeof sharedWebPush?.publicKey === "string" ? sharedWebPush.publicKey : null,
+    publicKey: typeof sharedWebPush?.publicKey === "string" ? sharedWebPush.publicKey : null,
     subscribeUrl: route("matrix.web-push.subscribe"),
     unsubscribeUrl: route("matrix.web-push.unsubscribe"),
     presenceUrl: route("matrix.web-push.presence"),
@@ -223,8 +220,7 @@ const MatrixPage = ({
     };
   }, [isFullscreen, overlayOpen]);
 
-  const { activeTodoId, clearActiveTodo, isRunning, selectTodo, start, pause } =
-    pomodoro;
+  const { activeTodoId, clearActiveTodo, isRunning, selectTodo, start, pause } = pomodoro;
 
   const startWithWebPush = (): void => {
     void webPush.ensureSubscribed();
@@ -248,12 +244,7 @@ const MatrixPage = ({
       const target = event.target;
       if (target instanceof HTMLElement) {
         const tag = target.tagName;
-        if (
-          tag === "INPUT" ||
-          tag === "TEXTAREA" ||
-          tag === "SELECT" ||
-          target.isContentEditable
-        ) {
+        if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target.isContentEditable) {
           return;
         }
       }
@@ -367,32 +358,28 @@ const MatrixPage = ({
                 isLive ? "bg-emerald-500 dark:bg-emerald-400 animate-pulse" : "bg-slate-500",
               )}
             />
-            {isLive ? "Live" : "Offline"}
+            {isLive ? t("matrix.live") : t("matrix.offline")}
           </span>
         </TooltipTrigger>
         <TooltipContent side="bottom">
-          {isLive ? "SSE đang kết nối" : "SSE đang kết nối lại…"}
+          {isLive ? t("matrix.sse_connected") : t("matrix.sse_reconnecting")}
         </TooltipContent>
       </Tooltip>
 
       <span className="ml-auto inline-flex items-center gap-1.5 text-sky-700 dark:text-sky-300/90">
-        <span className="h-2.5 w-2.5 rounded-sm bg-sky-500/80" /> Todo
+        <span className="h-2.5 w-2.5 rounded-sm bg-sky-500/80" /> {t("matrix.legend_todo")}
       </span>
       <span className="inline-flex items-center gap-1.5 text-orange-700 dark:text-orange-300/90">
-        <span className="h-2.5 w-2.5 rounded-sm bg-orange-500/80" /> In progress
+        <span className="h-2.5 w-2.5 rounded-sm bg-orange-500/80" />{" "}
+        {t("matrix.legend_in_progress")}
       </span>
 
       <HintButton
-        label={isFullscreen ? "Thoát toàn màn hình (Esc)" : "Toàn màn hình"}
+        label={isFullscreen ? t("matrix.exit_fullscreen") : t("matrix.fullscreen")}
         onClick={() => setIsFullscreen((value) => !value)}
       >
-        {isFullscreen ? (
-          <Minimize2 className="w-4 h-4" />
-        ) : (
-          <Maximize2 className="w-4 h-4" />
-        )}
+        {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
       </HintButton>
-
       <ThemeToggle />
 
       <DropdownMenu>
@@ -404,21 +391,18 @@ const MatrixPage = ({
                 variant="outline"
                 size="sm"
                 className="cursor-pointer"
-                aria-label="Thêm thao tác"
+                aria-label={t("matrix.more_actions")}
               >
                 <MoreVertical className="w-4 h-4" />
               </Button>
             </DropdownMenuTrigger>
           </TooltipTrigger>
-          <TooltipContent side="bottom">Thêm thao tác</TooltipContent>
+          <TooltipContent side="bottom">{t("matrix.more_actions")}</TooltipContent>
         </Tooltip>
         <DropdownMenuContent align="end" className="z-[240] w-56">
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onSelect={() => setBacklogOpen(true)}
-          >
+          <DropdownMenuItem className="cursor-pointer" onSelect={() => setBacklogOpen(true)}>
             <Inbox className="w-4 h-4" />
-            Backlog
+            {t("matrix.backlog")}
             {backlog.length > 0 && (
               <span className="ml-auto text-[10px] tabular-nums text-muted-foreground">
                 {backlog.length}
@@ -430,7 +414,7 @@ const MatrixPage = ({
             onSelect={() => setPomodoroSettingsOpen(true)}
           >
             <Timer className="w-4 h-4" />
-            Pomodoro settings
+            {t("matrix.pomodoro_settings")}
           </DropdownMenuItem>
           {webPush.configured && (
             <DropdownMenuItem
@@ -445,25 +429,23 @@ const MatrixPage = ({
                 }
               }}
             >
-              {webPush.subscribed ? (
-                <BellOff className="w-4 h-4" />
-              ) : (
-                <Bell className="w-4 h-4" />
-              )}
+              {webPush.subscribed ? <BellOff className="w-4 h-4" /> : <Bell className="w-4 h-4" />}
               {webPush.needsHomeScreen && !webPush.subscribed
-                ? "iOS: Add to Home Screen"
+                ? t("matrix.web_push_ios")
                 : webPush.subscribed
                   ? webPush.serverSubscriptionCount > 0
-                    ? `Tắt Web Push (${webPush.serverSubscriptionCount} máy)`
-                    : "Tắt Web Push (chưa lưu server)"
-                  : "Bật Web Push"}
+                    ? t("matrix.web_push_disable", {
+                        count: webPush.serverSubscriptionCount,
+                      })
+                    : t("matrix.web_push_disable_unsaved")
+                  : t("matrix.web_push_enable")}
             </DropdownMenuItem>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
       {webPush.subscribed && webPush.serverSubscriptionCount === 0 && !webPush.error && (
         <span className="basis-full text-[10px] text-amber-700 dark:text-amber-300">
-          Quyền noti local OK — bấm Bật Web Push lại để lưu lên server (cần cho iPhone)
+          {t("matrix.web_push_hint")}
         </span>
       )}
       {webPush.error && (
@@ -540,58 +522,50 @@ const MatrixPage = ({
     />
   );
 
+  const matrixChrome = (
+    <>
+      <div className="flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h1
+          className={cn(
+            "inline-flex items-center gap-2 font-bold text-foreground",
+            isFullscreen ? "text-xl" : "text-2xl",
+          )}
+        >
+          {t("matrix.title")}
+          <HintButton label={t("matrix.create_backlog")} onClick={openCreateBacklog}>
+            <Plus className="w-4 h-4" />
+          </HintButton>
+        </h1>
+        {toolbar}
+      </div>
+
+      <div className="shrink-0">{pomodoroBar}</div>
+      <div className="min-h-0 flex-1 overflow-hidden">{grid}</div>
+    </>
+  );
+
   return (
     <AppShell auth={auth} fillViewport={!isFullscreen}>
-      <div
-        className={cn(
-          "flex min-h-0 flex-col gap-3",
-          !isFullscreen && "flex-1 overflow-y-auto scrollbar-hidden lg:overflow-hidden",
-          isFullscreen && "invisible h-0 overflow-hidden",
-        )}
-      >
-        <div className="mb-0 flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="text-2xl font-bold text-foreground inline-flex items-center gap-2">
-            Eisenhower Matrix
-            <HintButton
-              label="Tạo todo mới (status Backlog)"
-              onClick={openCreateBacklog}
-            >
-              <Plus className="w-4 h-4" />
-            </HintButton>
-          </h1>
-          {toolbar}
+      {!isFullscreen ? (
+        <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto scrollbar-hidden lg:overflow-hidden">
+          {matrixChrome}
         </div>
-
-        <div className="shrink-0">{pomodoroBar}</div>
-        <div className="min-h-0 lg:flex-1 lg:overflow-hidden">{grid}</div>
-      </div>
+      ) : null}
 
       {formModal}
       {backlogDialog}
       {pomodoroSettingsDialog}
 
-      {isFullscreen &&
-        createPortal(
-          <TooltipProvider delayDuration={250}>
-            <div className="fixed inset-0 z-[100] flex flex-col bg-background p-4 sm:p-6">
-              <div className="mb-3 flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <h1 className="text-xl font-bold text-foreground inline-flex items-center gap-2">
-                  Eisenhower Matrix
-                  <HintButton
-                    label="Tạo todo mới (status Backlog)"
-                    onClick={openCreateBacklog}
-                  >
-                    <Plus className="w-4 h-4" />
-                  </HintButton>
-                </h1>
-                {toolbar}
+      {isFullscreen
+        ? createPortal(
+            <TooltipProvider delayDuration={250}>
+              <div className="fixed inset-0 z-[100] flex flex-col gap-3 bg-background p-4 sm:p-6">
+                {matrixChrome}
               </div>
-              <div className="shrink-0">{pomodoroBar}</div>
-              <div className="min-h-0 flex-1 overflow-hidden">{grid}</div>
-            </div>
-          </TooltipProvider>,
-          document.body,
-        )}
+            </TooltipProvider>,
+            document.body,
+          )
+        : null}
     </AppShell>
   );
 };

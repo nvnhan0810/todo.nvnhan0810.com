@@ -24,8 +24,9 @@ import {
   TodoPriorityBadge,
   TodoStatusBadge,
 } from "@/ts/presentation/components/todoBadges";
-import { TODO_STATUS_LABEL } from "@/ts/domain/constants/labels";
+import { todoStatusLabel } from "@/ts/domain/constants/labels";
 import type { TodoItem, TodoPriority, TodoProject, TodoStatus } from "@/ts/domain/todo";
+import { useTranslation } from "@/ts/presentation/i18n/useTranslation";
 
 type Props = RootProps & {
   todos: Pagination<TodoItem>;
@@ -47,6 +48,7 @@ type FilterParams = {
 
 const ListPage = ({ auth, todos, projects, filters, statuses }: Props): React.ReactElement => {
   const route = useRoute();
+  const { t } = useTranslation();
   const [searchInput, setSearchInput] = useState(filters.search ?? "");
 
   useEffect(() => {
@@ -98,7 +100,7 @@ const ListPage = ({ auth, todos, projects, filters, statuses }: Props): React.Re
   };
 
   const projectOptions = [
-    { value: "", label: "All projects" },
+    { value: "", label: t("todos.all_projects") },
     ...projects.map((project) => ({
       value: String(project.id),
       label: project.name,
@@ -106,17 +108,17 @@ const ListPage = ({ auth, todos, projects, filters, statuses }: Props): React.Re
   ];
 
   const statusOptions = [
-    { value: "", label: "All statuses" },
+    { value: "", label: t("todos.all_statuses") },
     ...statuses.map((status) => ({
       value: status,
-      label: TODO_STATUS_LABEL[status],
+      label: todoStatusLabel(t, status),
     })),
   ];
 
   return (
     <AppShell auth={auth}>
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Todo — Tasks</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t("todos.title")}</h1>
         <Button
           variant="outline"
           onClick={() =>
@@ -126,7 +128,7 @@ const ListPage = ({ auth, todos, projects, filters, statuses }: Props): React.Re
             )
           }
         >
-          <Plus className="mr-1 h-4 w-4" /> New
+          <Plus className="mr-1 h-4 w-4" /> {t("common.new")}
         </Button>
       </div>
 
@@ -136,9 +138,9 @@ const ListPage = ({ auth, todos, projects, filters, statuses }: Props): React.Re
           <Input
             value={searchInput}
             onChange={(event) => setSearchInput(event.target.value)}
-            placeholder="Tìm theo title, mô tả..."
+            placeholder={t("todos.search_placeholder")}
             className="pl-9"
-            aria-label="Tìm kiếm todo"
+            aria-label={t("todos.search_aria")}
           />
         </div>
         <div className="w-full sm:w-56">
@@ -146,8 +148,8 @@ const ListPage = ({ auth, todos, projects, filters, statuses }: Props): React.Re
             options={projectOptions}
             value={filters.project_id != null ? String(filters.project_id) : ""}
             handleChange={(value) => applyFilter("project_id", value)}
-            placeholder="All projects"
-            searchPlaceholder="Tìm project..."
+            placeholder={t("todos.all_projects")}
+            searchPlaceholder={t("todos.search_project")}
           />
         </div>
         <div className="w-full sm:w-48">
@@ -155,8 +157,8 @@ const ListPage = ({ auth, todos, projects, filters, statuses }: Props): React.Re
             options={statusOptions}
             value={filters.status ?? ""}
             handleChange={(value) => applyFilter("status", value)}
-            placeholder="All statuses"
-            searchPlaceholder="Tìm status..."
+            placeholder={t("todos.all_statuses")}
+            searchPlaceholder={t("todos.search_status")}
           />
         </div>
       </div>
@@ -165,13 +167,13 @@ const ListPage = ({ auth, todos, projects, filters, statuses }: Props): React.Re
         <table className="w-full text-sm">
           <thead className="bg-muted text-foreground">
             <tr>
-              <th className="border border-border px-3 py-2">Title</th>
-              <th className="border border-border px-3 py-2">Project</th>
-              <th className="border border-border px-3 py-2">Status</th>
-              <th className="border border-border px-3 py-2">Priority</th>
-              <th className="border border-border px-3 py-2">Eisenhower</th>
-              <th className="border border-border px-3 py-2">Due</th>
-              <th className="border border-border px-3 py-2">Actions</th>
+              <th className="border border-border px-3 py-2">{t("todos.col_title")}</th>
+              <th className="border border-border px-3 py-2">{t("todos.col_project")}</th>
+              <th className="border border-border px-3 py-2">{t("todos.col_status")}</th>
+              <th className="border border-border px-3 py-2">{t("todos.col_priority")}</th>
+              <th className="border border-border px-3 py-2">{t("todos.col_eisenhower")}</th>
+              <th className="border border-border px-3 py-2">{t("todos.col_due")}</th>
+              <th className="border border-border px-3 py-2">{t("todos.col_actions")}</th>
             </tr>
           </thead>
           <tbody className="text-foreground">
@@ -179,15 +181,15 @@ const ListPage = ({ auth, todos, projects, filters, statuses }: Props): React.Re
               <tr>
                 <td colSpan={7} className="border border-border px-3 py-6 text-center text-muted-foreground">
                   {filters.search
-                    ? `Không tìm thấy todo cho “${filters.search}”.`
-                    : "Chưa có todo nào."}
+                    ? t("todos.empty_search", { search: filters.search })
+                    : t("todos.empty")}
                 </td>
               </tr>
             )}
             {todos.data.map((todo) => (
               <tr key={todo.id} className="bg-card">
                 <td className="border border-border px-3 py-2">{todo.title}</td>
-                <td className="border border-border px-3 py-2">{todo.project?.name ?? "—"}</td>
+                <td className="border border-border px-3 py-2">{todo.project?.name ?? t("common.none")}</td>
                 <td className="border border-border px-3 py-2 text-center">
                   <TodoStatusBadge status={todo.status} />
                 </td>
@@ -198,31 +200,33 @@ const ListPage = ({ auth, todos, projects, filters, statuses }: Props): React.Re
                   <TodoEisenhowerBadge todo={todo} />
                 </td>
                 <td className="border border-border px-3 py-2 text-center">
-                  {todo.due_at ? todo.due_at.slice(0, 10) : "—"}
+                  {todo.due_at ? todo.due_at.slice(0, 10) : t("common.none")}
                 </td>
                 <td className="border border-border px-3 py-2">
                   <div className="flex items-center justify-center gap-3">
                     <a href={route("todos.edit", todo.id)} className="text-sky-700 dark:text-sky-300">
-                      Edit
+                      {t("common.edit")}
                     </a>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <span className="cursor-pointer text-rose-600 dark:text-rose-400">Delete</span>
+                        <span className="cursor-pointer text-rose-600 dark:text-rose-400">
+                          {t("common.delete")}
+                        </span>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Xoá todo</AlertDialogTitle>
+                          <AlertDialogTitle>{t("todos.delete_title")}</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Soft-delete “{todo.title}”?
+                            {t("todos.delete_confirm", { title: todo.title })}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>Hủy</AlertDialogCancel>
+                          <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
                           <AlertDialogAction
                             className="bg-red-500 hover:bg-red-600"
                             onClick={() => handleDelete(todo.id)}
                           >
-                            Xoá
+                            {t("common.delete")}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>

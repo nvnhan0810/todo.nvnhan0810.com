@@ -1,8 +1,12 @@
 import { Badge } from "@/ts/components/ui/badge";
-import { TODO_PRIORITY_LABEL, TODO_STATUS_LABEL } from "@/ts/domain/constants/labels";
+import {
+  todoPriorityLabel,
+  todoStatusLabel,
+} from "@/ts/domain/constants/labels";
 import type { TodoItem, TodoPriority, TodoStatus } from "@/ts/domain/todo";
+import { useTranslation } from "@/ts/presentation/i18n/useTranslation";
+import { QUADRANTS, type QuadrantMeta } from "@/ts/presentation/pages/matrix/quadrants";
 import { cn } from "@/ts/utils";
-import { QUADRANTS } from "@/ts/presentation/pages/matrix/quadrants";
 
 const STATUS_BADGE_CLASS: Record<TodoStatus, string> = {
   backlog: "border-slate-400/40 bg-slate-500/10 text-slate-700 dark:text-slate-300",
@@ -22,7 +26,7 @@ const PRIORITY_BADGE_CLASS: Record<TodoPriority, string> = {
 const eisenhowerMeta = (
   isUrgent: boolean,
   isImportant: boolean,
-): (typeof QUADRANTS)[number] => {
+): QuadrantMeta => {
   const meta = QUADRANTS.find(
     (quadrant) =>
       quadrant.is_urgent === isUrgent && quadrant.is_important === isImportant,
@@ -32,10 +36,8 @@ const eisenhowerMeta = (
     return meta;
   }
 
-  return {
+  return QUADRANTS[3] ?? {
     key: "eliminate",
-    title: "Loại bỏ",
-    subtitle: "Not urgent · Not important",
     is_urgent: false,
     is_important: false,
     accent: "border-slate-300 dark:border-slate-700",
@@ -48,11 +50,15 @@ type StatusBadgeProps = {
   status: TodoStatus;
 };
 
-export const TodoStatusBadge = ({ status }: StatusBadgeProps): React.ReactElement => (
-  <Badge variant="outline" className={cn("whitespace-nowrap", STATUS_BADGE_CLASS[status])}>
-    {TODO_STATUS_LABEL[status]}
-  </Badge>
-);
+export const TodoStatusBadge = ({ status }: StatusBadgeProps): React.ReactElement => {
+  const { t } = useTranslation();
+
+  return (
+    <Badge variant="outline" className={cn("whitespace-nowrap", STATUS_BADGE_CLASS[status])}>
+      {todoStatusLabel(t, status)}
+    </Badge>
+  );
+};
 
 type PriorityBadgeProps = {
   priority: TodoPriority;
@@ -60,14 +66,18 @@ type PriorityBadgeProps = {
 
 export const TodoPriorityBadge = ({
   priority,
-}: PriorityBadgeProps): React.ReactElement => (
-  <Badge
-    variant="outline"
-    className={cn("whitespace-nowrap", PRIORITY_BADGE_CLASS[priority])}
-  >
-    {TODO_PRIORITY_LABEL[priority]}
-  </Badge>
-);
+}: PriorityBadgeProps): React.ReactElement => {
+  const { t } = useTranslation();
+
+  return (
+    <Badge
+      variant="outline"
+      className={cn("whitespace-nowrap", PRIORITY_BADGE_CLASS[priority])}
+    >
+      {todoPriorityLabel(t, priority)}
+    </Badge>
+  );
+};
 
 type EisenhowerBadgeProps = {
   todo: Pick<TodoItem, "is_urgent" | "is_important">;
@@ -76,6 +86,7 @@ type EisenhowerBadgeProps = {
 export const TodoEisenhowerBadge = ({
   todo,
 }: EisenhowerBadgeProps): React.ReactElement => {
+  const { t } = useTranslation();
   const meta = eisenhowerMeta(todo.is_urgent, todo.is_important);
 
   return (
@@ -87,9 +98,9 @@ export const TodoEisenhowerBadge = ({
         meta.panel,
         meta.header,
       )}
-      title={meta.subtitle}
+      title={t(`quadrant.${meta.key}.subtitle`)}
     >
-      {meta.title}
+      {t(`quadrant.${meta.key}.title`)}
     </Badge>
   );
 };

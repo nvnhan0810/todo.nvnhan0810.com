@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Throwable;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -29,6 +30,8 @@ class HandleInertiaRequests extends Middleware
                 'error' => fn () => $request->session()->get('error'),
                 'created_project' => fn () => $request->session()->get('created_project'),
             ],
+            'locale' => fn () => app()->getLocale(),
+            'translations' => fn () => $this->loadTranslations(app()->getLocale()),
             'webPush' => fn () => $request->user()
                 ? [
                     'configured' => filled(config('web-push.vapid.public_key'))
@@ -37,5 +40,26 @@ class HandleInertiaRequests extends Middleware
                 ]
                 : null,
         ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function loadTranslations(string $locale): array
+    {
+        $path = lang_path("{$locale}.json");
+
+        if (! is_file($path)) {
+            return [];
+        }
+
+        try {
+            /** @var array<string, string>|null $decoded */
+            $decoded = json_decode((string) file_get_contents($path), true, 512, JSON_THROW_ON_ERROR);
+        } catch (Throwable) {
+            return [];
+        }
+
+        return is_array($decoded) ? $decoded : [];
     }
 }

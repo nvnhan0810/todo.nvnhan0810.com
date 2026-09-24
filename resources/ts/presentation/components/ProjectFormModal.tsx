@@ -10,6 +10,7 @@ import {
 import { Input } from "@/ts/components/ui/input";
 import { Label } from "@/ts/components/ui/label";
 import type { TodoProject } from "@/ts/domain/todo";
+import { useTranslation } from "@/ts/presentation/i18n/useTranslation";
 import { useForm } from "@inertiajs/react";
 import { useRoute } from "ziggy-js";
 
@@ -60,6 +61,7 @@ const ProjectFormModalBody = ({
   onCreated,
 }: BodyProps): React.ReactElement => {
   const route = useRoute();
+  const { t } = useTranslation();
   const { data, setData, post, processing, errors } = useForm({
     name: "",
     git_repo_url: "",
@@ -91,15 +93,13 @@ const ProjectFormModalBody = ({
   return (
     <form onSubmit={submit} className="space-y-4">
       <DialogHeader>
-        <DialogTitle>Tạo project</DialogTitle>
-        <DialogDescription>
-          Project mới sẽ được chọn ngay cho todo đang tạo.
-        </DialogDescription>
+        <DialogTitle>{t("projects.create_title")}</DialogTitle>
+        <DialogDescription>{t("projects.create_description")}</DialogDescription>
       </DialogHeader>
 
       <div className="space-y-4">
         <div>
-          <Label htmlFor="project-name">Tên</Label>
+          <Label htmlFor="project-name">{t("projects.name")}</Label>
           <Input
             id="project-name"
             value={data.name}
@@ -111,7 +111,7 @@ const ProjectFormModalBody = ({
           ) : null}
         </div>
         <div>
-          <Label htmlFor="project-domain">Domain (tuỳ chọn)</Label>
+          <Label htmlFor="project-domain">{t("projects.domain")}</Label>
           <Input
             id="project-domain"
             value={data.domain}
@@ -123,7 +123,7 @@ const ProjectFormModalBody = ({
           ) : null}
         </div>
         <div>
-          <Label htmlFor="project-repo">Git repo URL (tuỳ chọn)</Label>
+          <Label htmlFor="project-repo">{t("projects.repo")}</Label>
           <Input
             id="project-repo"
             value={data.git_repo_url}
@@ -138,10 +138,10 @@ const ProjectFormModalBody = ({
 
       <DialogFooter>
         <Button type="button" variant="outline" onClick={onClose}>
-          Hủy
+          {t("common.cancel")}
         </Button>
         <Button type="submit" disabled={processing}>
-          Tạo
+          {t("common.create")}
         </Button>
       </DialogFooter>
     </form>

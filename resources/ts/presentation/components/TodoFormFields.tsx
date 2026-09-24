@@ -3,8 +3,12 @@ import { Checkbox } from "@/ts/components/ui/checkbox";
 import { Input } from "@/ts/components/ui/input";
 import { Label } from "@/ts/components/ui/label";
 import { Textarea } from "@/ts/components/ui/textarea";
-import { TODO_PRIORITY_LABEL, TODO_STATUS_LABEL } from "@/ts/domain/constants/labels";
+import {
+  todoPriorityLabel,
+  todoStatusLabel,
+} from "@/ts/domain/constants/labels";
 import type { TodoPriority, TodoProject, TodoStatus } from "@/ts/domain/todo";
+import { useTranslation } from "@/ts/presentation/i18n/useTranslation";
 
 export type TodoFormValues = {
   project_id: number | string;
@@ -36,8 +40,10 @@ const TodoFormFields = ({
   onChange,
   onCreateProject,
 }: Props): React.ReactElement => {
+  const { t } = useTranslation();
+
   const projectOptions = [
-    { value: "", label: "— Không gán —" },
+    { value: "", label: t("form.no_project") },
     ...projects.map((project) => ({
       value: String(project.id),
       label: project.name,
@@ -46,18 +52,18 @@ const TodoFormFields = ({
 
   const statusOptions = statuses.map((status) => ({
     value: status,
-    label: TODO_STATUS_LABEL[status],
+    label: todoStatusLabel(t, status),
   }));
 
   const priorityOptions = priorities.map((priority) => ({
     value: priority,
-    label: TODO_PRIORITY_LABEL[priority],
+    label: todoPriorityLabel(t, priority),
   }));
 
   return (
     <div className="space-y-4">
       <div>
-        <Label>Title</Label>
+        <Label>{t("form.title")}</Label>
         <Input
           value={values.title}
           onChange={(e) => onChange("title", e.target.value)}
@@ -67,7 +73,7 @@ const TodoFormFields = ({
       </div>
 
       <div>
-        <Label>Project</Label>
+        <Label>{t("form.project")}</Label>
         <Combobox
           options={projectOptions}
           value={
@@ -78,12 +84,12 @@ const TodoFormFields = ({
           handleChange={(next) =>
             onChange("project_id", next === "" ? "" : Number(next))
           }
-          placeholder="Chọn project"
-          searchPlaceholder="Tìm project..."
+          placeholder={t("form.select_project")}
+          searchPlaceholder={t("form.search_project")}
           footerAction={
             onCreateProject
               ? {
-                  label: "+ Tạo project mới",
+                  label: t("form.create_project"),
                   onSelect: onCreateProject,
                 }
               : undefined
@@ -95,7 +101,7 @@ const TodoFormFields = ({
       </div>
 
       <div>
-        <Label>Description</Label>
+        <Label>{t("form.description")}</Label>
         <Textarea
           value={values.description}
           onChange={(e) => onChange("description", e.target.value)}
@@ -108,26 +114,26 @@ const TodoFormFields = ({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <Label>Status</Label>
+          <Label>{t("form.status")}</Label>
           <Combobox
             options={statusOptions}
             value={values.status}
             handleChange={(next) => onChange("status", next as TodoStatus)}
-            placeholder="Chọn status"
-            searchPlaceholder="Tìm status..."
+            placeholder={t("form.select_status")}
+            searchPlaceholder={t("form.search_status")}
           />
           {errors.status && (
             <p className="text-red-400 text-sm mt-1">{errors.status}</p>
           )}
         </div>
         <div>
-          <Label>Priority</Label>
+          <Label>{t("form.priority")}</Label>
           <Combobox
             options={priorityOptions}
             value={values.priority}
             handleChange={(next) => onChange("priority", next as TodoPriority)}
-            placeholder="Chọn priority"
-            searchPlaceholder="Tìm priority..."
+            placeholder={t("form.select_priority")}
+            searchPlaceholder={t("form.search_priority")}
           />
           {errors.priority && (
             <p className="text-red-400 text-sm mt-1">{errors.priority}</p>
@@ -136,7 +142,7 @@ const TodoFormFields = ({
       </div>
 
       <div>
-        <Label>Due date</Label>
+        <Label>{t("form.due_date")}</Label>
         <Input
           type="date"
           value={values.due_at}
@@ -153,14 +159,14 @@ const TodoFormFields = ({
             checked={values.is_urgent}
             onCheckedChange={(v) => onChange("is_urgent", v === true)}
           />
-          Urgent
+          {t("common.urgent")}
         </label>
         <label className="flex items-center gap-2 text-foreground">
           <Checkbox
             checked={values.is_important}
             onCheckedChange={(v) => onChange("is_important", v === true)}
           />
-          Important
+          {t("common.important")}
         </label>
       </div>
     </div>
