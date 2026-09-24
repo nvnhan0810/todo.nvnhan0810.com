@@ -148,14 +148,14 @@ const TodoFormFields = ({
       </div>
 
       <div className="flex flex-wrap gap-6">
-        <label className="flex items-center gap-2 text-gray-300">
+        <label className="flex items-center gap-2 text-foreground">
           <Checkbox
             checked={values.is_urgent}
             onCheckedChange={(v) => onChange("is_urgent", v === true)}
           />
           Urgent
         </label>
-        <label className="flex items-center gap-2 text-gray-300">
+        <label className="flex items-center gap-2 text-foreground">
           <Checkbox
             checked={values.is_important}
             onCheckedChange={(v) => onChange("is_important", v === true)}

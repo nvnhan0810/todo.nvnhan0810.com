@@ -375,11 +375,11 @@ const MatrixPage = ({
         </TooltipContent>
       </Tooltip>
 
-      <span className="inline-flex items-center gap-1.5 text-sky-700 dark:text-sky-300 ml-auto">
-        <span className="h-2.5 w-2.5 rounded-sm bg-sky-500" /> Todo
+      <span className="ml-auto inline-flex items-center gap-1.5 text-sky-700 dark:text-sky-300/90">
+        <span className="h-2.5 w-2.5 rounded-sm bg-sky-500/80" /> Todo
       </span>
-      <span className="inline-flex items-center gap-1.5 text-orange-700 dark:text-orange-300">
-        <span className="h-2.5 w-2.5 rounded-sm bg-orange-500" /> In progress
+      <span className="inline-flex items-center gap-1.5 text-orange-700 dark:text-orange-300/90">
+        <span className="h-2.5 w-2.5 rounded-sm bg-orange-500/80" /> In progress
       </span>
 
       <HintButton

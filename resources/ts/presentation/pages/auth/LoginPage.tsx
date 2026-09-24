@@ -14,7 +14,7 @@ const LoginPage = ({ flash }: Props): React.ReactElement => {
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_hsl(215_20%_70%_/_0.35),_transparent_55%),radial-gradient(ellipse_at_bottom,_hsl(210_15%_55%_/_0.2),_transparent_50%)]"
       />
-      <div className="relative w-full max-w-md space-y-8 rounded-2xl border border-border/70 bg-card/80 p-8 shadow-sm backdrop-blur">
+      <div className="relative w-full max-w-md space-y-8 rounded-2xl border border-border bg-card p-8 shadow-sm">
         <div className="space-y-2 text-center">
           <h1 className="text-3xl font-semibold tracking-tight">Todo</h1>
           <p className="text-sm text-muted-foreground">

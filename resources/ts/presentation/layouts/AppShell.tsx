@@ -48,7 +48,7 @@ const AppShell = ({
           fillViewport ? "h-dvh overflow-hidden" : "min-h-dvh",
         )}
       >
-        <header className="shrink-0 border-b border-border/60 bg-card/40 backdrop-blur-sm">
+        <header className="shrink-0 border-b border-border bg-card">
           <div className="flex w-full items-center justify-between gap-4 px-4 py-3 sm:px-6">
             <div className="flex min-w-0 items-center gap-4">
               <Link href={route("matrix.index")} className="shrink-0 font-semibold tracking-tight">

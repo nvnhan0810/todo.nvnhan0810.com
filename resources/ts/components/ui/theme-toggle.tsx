@@ -13,7 +13,7 @@ type Props = {
 };
 
 /**
- * Toggles between soft-gray light and dark. Ignores "system" for a clear 1-tap control.
+ * Toggles between bright light and soft charcoal dark.
  */
 export const ThemeToggle = ({ className }: Props): React.ReactElement => {
   const { theme, setTheme } = useTheme();
@@ -46,7 +46,7 @@ export const ThemeToggle = ({ className }: Props): React.ReactElement => {
         </Button>
       </TooltipTrigger>
       <TooltipContent side="bottom">
-        {isDark ? "Light (xám dịu)" : "Dark"}
+        {isDark ? "Light" : "Dark"}
       </TooltipContent>
     </Tooltip>
   );

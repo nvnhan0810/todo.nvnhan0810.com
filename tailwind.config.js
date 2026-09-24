@@ -60,12 +60,12 @@ export default {
       keyframes: {
         "matrix-locate": {
           "0%, 100%": {
-            backgroundColor: "rgba(56, 189, 248, 0.08)",
-            boxShadow: "inset 0 0 0 1px rgba(56, 189, 248, 0.35)",
+            backgroundColor: "rgba(56, 189, 248, 0.06)",
+            boxShadow: "inset 0 0 0 1px rgba(56, 189, 248, 0.28)",
           },
           "50%": {
-            backgroundColor: "rgba(56, 189, 248, 0.32)",
-            boxShadow: "inset 0 0 0 2px rgba(56, 189, 248, 0.9)",
+            backgroundColor: "rgba(56, 189, 248, 0.18)",
+            boxShadow: "inset 0 0 0 2px rgba(56, 189, 248, 0.55)",
           },
         },
       },

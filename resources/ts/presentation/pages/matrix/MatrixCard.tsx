@@ -69,9 +69,9 @@ const MatrixCard = ({
       }}
       className={cn(
         "rounded-md px-3 py-2.5 cursor-grab active:cursor-grabbing transition-colors duration-200",
-        "border border-black/10 dark:border-white/5 hover:border-black/20 dark:hover:border-white/15",
+        "border border-border hover:border-foreground/25",
         style.card,
-        isPomodoroActive && "ring-1 ring-rose-500/50 dark:ring-rose-400/60",
+        isPomodoroActive && "ring-1 ring-rose-400 dark:ring-rose-400/60",
         isHighlighted && "animate-matrix-locate relative z-[1]",
       )}
     >
@@ -103,7 +103,7 @@ const MatrixCard = ({
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="h-6 w-6 p-0 cursor-pointer text-rose-300 hover:text-rose-200"
+                className="h-6 w-6 cursor-pointer p-0 text-rose-600/80 hover:text-rose-700 dark:text-rose-300/90 dark:hover:text-rose-200"
                 aria-label="Chọn todo cho Pomodoro"
                 onClick={(event) => {
                   event.stopPropagation();

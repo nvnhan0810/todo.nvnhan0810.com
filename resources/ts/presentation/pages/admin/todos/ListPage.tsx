@@ -116,7 +116,7 @@ const ListPage = ({ auth, todos, projects, filters, statuses }: Props): React.Re
   return (
     <AppShell auth={auth}>
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-100">Todo — Tasks</h1>
+        <h1 className="text-2xl font-bold text-foreground">Todo — Tasks</h1>
         <Button
           variant="outline"
           onClick={() =>
@@ -163,21 +163,21 @@ const ListPage = ({ auth, todos, projects, filters, statuses }: Props): React.Re
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-gray-100 text-gray-900">
+          <thead className="bg-muted text-foreground">
             <tr>
-              <th className="border px-3 py-2">Title</th>
-              <th className="border px-3 py-2">Project</th>
-              <th className="border px-3 py-2">Status</th>
-              <th className="border px-3 py-2">Priority</th>
-              <th className="border px-3 py-2">Eisenhower</th>
-              <th className="border px-3 py-2">Due</th>
-              <th className="border px-3 py-2">Actions</th>
+              <th className="border border-border px-3 py-2">Title</th>
+              <th className="border border-border px-3 py-2">Project</th>
+              <th className="border border-border px-3 py-2">Status</th>
+              <th className="border border-border px-3 py-2">Priority</th>
+              <th className="border border-border px-3 py-2">Eisenhower</th>
+              <th className="border border-border px-3 py-2">Due</th>
+              <th className="border border-border px-3 py-2">Actions</th>
             </tr>
           </thead>
-          <tbody className="text-gray-300">
+          <tbody className="text-foreground">
             {todos.data.length === 0 && (
               <tr>
-                <td colSpan={7} className="border px-3 py-6 text-center text-muted-foreground">
+                <td colSpan={7} className="border border-border px-3 py-6 text-center text-muted-foreground">
                   {filters.search
                     ? `Không tìm thấy todo cho “${filters.search}”.`
                     : "Chưa có todo nào."}
@@ -185,29 +185,29 @@ const ListPage = ({ auth, todos, projects, filters, statuses }: Props): React.Re
               </tr>
             )}
             {todos.data.map((todo) => (
-              <tr key={todo.id}>
-                <td className="border px-3 py-2">{todo.title}</td>
-                <td className="border px-3 py-2">{todo.project?.name ?? "—"}</td>
-                <td className="border px-3 py-2 text-center">
+              <tr key={todo.id} className="bg-card">
+                <td className="border border-border px-3 py-2">{todo.title}</td>
+                <td className="border border-border px-3 py-2">{todo.project?.name ?? "—"}</td>
+                <td className="border border-border px-3 py-2 text-center">
                   <TodoStatusBadge status={todo.status} />
                 </td>
-                <td className="border px-3 py-2 text-center">
+                <td className="border border-border px-3 py-2 text-center">
                   <TodoPriorityBadge priority={todo.priority} />
                 </td>
-                <td className="border px-3 py-2 text-center">
+                <td className="border border-border px-3 py-2 text-center">
                   <TodoEisenhowerBadge todo={todo} />
                 </td>
-                <td className="border px-3 py-2 text-center">
+                <td className="border border-border px-3 py-2 text-center">
                   {todo.due_at ? todo.due_at.slice(0, 10) : "—"}
                 </td>
-                <td className="border px-3 py-2">
+                <td className="border border-border px-3 py-2">
                   <div className="flex items-center justify-center gap-3">
-                    <a href={route("todos.edit", todo.id)} className="text-blue-400">
+                    <a href={route("todos.edit", todo.id)} className="text-sky-700 dark:text-sky-300">
                       Edit
                     </a>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <span className="cursor-pointer text-red-500">Delete</span>
+                        <span className="cursor-pointer text-rose-600 dark:text-rose-400">Delete</span>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>

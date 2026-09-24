@@ -54,7 +54,7 @@ const FormPage = ({
 
   return (
     <AppShell auth={auth}>
-      <h1 className="text-2xl font-bold text-gray-100 mb-4">{isEdit ? "Sửa todo" : "Tạo todo"}</h1>
+      <h1 className="mb-4 text-2xl font-bold text-foreground">{isEdit ? "Sửa todo" : "Tạo todo"}</h1>
 
       <form onSubmit={submit} className="max-w-2xl space-y-4">
         <TodoFormFields

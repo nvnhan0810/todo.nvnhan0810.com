@@ -32,7 +32,7 @@ const FormPage = ({ auth, project }: Props) => {
 
   return (
     <AppShell auth={auth}>
-      <h1 className="text-2xl font-bold text-gray-100 mb-4">
+      <h1 className="mb-4 text-2xl font-bold text-foreground">
         {isEdit ? "Sửa project" : "Tạo project"}
       </h1>
 

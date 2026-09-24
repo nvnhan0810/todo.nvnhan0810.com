@@ -53,10 +53,10 @@ const PomodoroBar = ({
 
   const phaseAccent =
     phase === "focus"
-      ? "border-rose-400/50 bg-rose-200/40 dark:border-rose-500/40 dark:bg-rose-950/30"
+      ? "border-rose-300 bg-rose-100 dark:border-rose-800 dark:bg-rose-950"
       : phase === "short_break"
-        ? "border-teal-400/50 bg-teal-200/35 dark:border-teal-500/40 dark:bg-teal-950/25"
-        : "border-indigo-400/50 bg-indigo-200/35 dark:border-indigo-500/40 dark:bg-indigo-950/30";
+        ? "border-teal-300 bg-teal-100 dark:border-teal-800 dark:bg-teal-950"
+        : "border-indigo-300 bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-950";
 
   return (
     <div
@@ -76,7 +76,7 @@ const PomodoroBar = ({
               key={index}
               className={cn(
                 "h-1.5 w-1.5 rounded-full",
-                filled ? "bg-rose-400" : "bg-white/20",
+                filled ? "bg-rose-500/80 dark:bg-rose-400/80" : "bg-foreground/25",
               )}
             />
           ))}
