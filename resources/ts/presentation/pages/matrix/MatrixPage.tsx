@@ -31,7 +31,6 @@ import { useRoute } from "ziggy-js";
 import TodoFormModal, {
   type TodoCreateDefaults,
 } from "@/ts/presentation/components/TodoFormModal";
-import TodoNav from "@/ts/presentation/components/TodoNav";
 import { pickNextMatrixTodo } from "@/ts/application/matrixTodoOrder";
 import { useMatrixSse } from "@/ts/presentation/hooks/useMatrixSse";
 import { usePomodoro } from "@/ts/presentation/hooks/usePomodoro";
@@ -93,7 +92,7 @@ const MatrixGrid = ({
   highlightedTodoId,
   pomodoroPhase,
 }: GridProps): React.ReactElement => (
-  <div className="grid grid-cols-1 gap-3 lg:grid-cols-2 lg:grid-rows-2 lg:h-full min-h-0">
+  <div className="grid h-full min-h-0 grid-cols-1 gap-3 lg:grid-cols-2 lg:grid-rows-2">
     {QUADRANTS.map((meta) => (
       <MatrixQuadrant
         key={meta.key}
@@ -526,7 +525,6 @@ const MatrixPage = ({
       matrixTodos={matrixTodos}
       onLocateTodo={locateTodo}
       onCompleteActiveTodo={completeActiveTodo}
-      className="mb-3"
     />
   );
 
@@ -543,11 +541,15 @@ const MatrixPage = ({
   );
 
   return (
-    <TooltipProvider delayDuration={250}>
-      <AppShell auth={auth}>
-        <TodoNav />
-
-        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <AppShell auth={auth} fillViewport={!isFullscreen}>
+      <div
+        className={cn(
+          "flex min-h-0 flex-col gap-3",
+          !isFullscreen && "flex-1 overflow-y-auto scrollbar-hidden lg:overflow-hidden",
+          isFullscreen && "invisible h-0 overflow-hidden",
+        )}
+      >
+        <div className="mb-0 flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-bold text-foreground inline-flex items-center gap-2">
             Eisenhower Matrix
             <HintButton
@@ -560,33 +562,37 @@ const MatrixPage = ({
           {toolbar}
         </div>
 
-        <div className={cn(isFullscreen && "invisible")}>
-          {pomodoroBar}
-          <div className={cn(isFullscreen && "h-[70vh]")}>{grid}</div>
-        </div>
+        <div className="shrink-0">{pomodoroBar}</div>
+        <div className="min-h-0 lg:flex-1 lg:overflow-hidden">{grid}</div>
+      </div>
 
-        {formModal}
-        {backlogDialog}
-        {pomodoroSettingsDialog}
+      {formModal}
+      {backlogDialog}
+      {pomodoroSettingsDialog}
 
-        {isFullscreen &&
-          createPortal(
-            <TooltipProvider delayDuration={250}>
-              <div className="fixed inset-0 z-[100] flex flex-col bg-background p-4 sm:p-6">
-                <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between shrink-0">
-                  <h1 className="text-xl font-bold text-foreground">
-                    Eisenhower Matrix
-                  </h1>
-                  {toolbar}
-                </div>
-                <div className="shrink-0">{pomodoroBar}</div>
-                <div className="min-h-0 flex-1 overflow-auto">{grid}</div>
+      {isFullscreen &&
+        createPortal(
+          <TooltipProvider delayDuration={250}>
+            <div className="fixed inset-0 z-[100] flex flex-col bg-background p-4 sm:p-6">
+              <div className="mb-3 flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <h1 className="text-xl font-bold text-foreground inline-flex items-center gap-2">
+                  Eisenhower Matrix
+                  <HintButton
+                    label="Tạo todo mới (status Backlog)"
+                    onClick={openCreateBacklog}
+                  >
+                    <Plus className="w-4 h-4" />
+                  </HintButton>
+                </h1>
+                {toolbar}
               </div>
-            </TooltipProvider>,
-            document.body,
-          )}
-      </AppShell>
-    </TooltipProvider>
+              <div className="shrink-0">{pomodoroBar}</div>
+              <div className="min-h-0 flex-1 overflow-hidden">{grid}</div>
+            </div>
+          </TooltipProvider>,
+          document.body,
+        )}
+    </AppShell>
   );
 };
 

@@ -90,3 +90,17 @@
         @apply min-h-dvh bg-background text-foreground antialiased;
     }
 }
+
+@layer utilities {
+    /* Scroll vẫn dùng được; ẩn thanh scrollbar (Firefox + WebKit). */
+    .scrollbar-hidden {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .scrollbar-hidden::-webkit-scrollbar {
+        display: none;
+        width: 0;
+        height: 0;
+    }
+}

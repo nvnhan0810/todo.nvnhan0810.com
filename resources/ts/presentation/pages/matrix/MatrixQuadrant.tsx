@@ -76,7 +76,7 @@ const MatrixQuadrant = ({
       onDrop={onDrop}
       title="Click để tạo todo trong vùng này"
       className={cn(
-        "flex h-full min-h-[18rem] flex-col rounded-lg border-2 border-dashed p-3 transition-colors duration-200 cursor-pointer",
+        "flex h-64 flex-col overflow-hidden rounded-lg border-2 border-dashed p-3 transition-colors duration-200 cursor-pointer sm:h-72 lg:h-full lg:min-h-0",
         meta.accent,
         meta.panel,
         isOver && "border-solid bg-white/5",
@@ -94,7 +94,7 @@ const MatrixQuadrant = ({
         </span>
       </header>
 
-      <div className="flex flex-1 flex-col gap-2 overflow-y-auto min-h-0">
+      <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto scrollbar-hidden">
         {orderedTodos.length === 0 && (
           <p className="mt-6 text-center text-xs text-muted-foreground pointer-events-none">
             Click để tạo · hoặc kéo todo vào đây
