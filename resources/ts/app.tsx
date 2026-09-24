@@ -1,8 +1,13 @@
 import { createInertiaApp } from "@inertiajs/react";
 import { createRoot, hydrateRoot } from "react-dom/client";
+import { setupGoogleAnalytics } from "@/ts/infrastructure/googleAnalytics";
 import { ThemeProvider } from "@/ts/providers/theme-provider";
 
 type PageModule = { default: React.ComponentType };
+
+type InitialSharedProps = {
+  googleAnalyticsId?: string | null;
+};
 
 createInertiaApp({
   resolve: (name) => {
@@ -17,6 +22,9 @@ createInertiaApp({
     return page;
   },
   setup({ el, App, props }) {
+    const shared = props.initialPage.props as InitialSharedProps;
+    setupGoogleAnalytics(shared.googleAnalyticsId);
+
     const appNode = (
       <ThemeProvider defaultTheme="system">
         <App {...props} />

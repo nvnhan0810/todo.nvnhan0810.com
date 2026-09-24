@@ -41,4 +41,9 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URL', env('APP_URL').'/auth/google/callback'),
     ],
 
+    'google_analytics' => [
+        'measurement_id' => env('GOOGLE_ANALYTICS_MEASUREMENT_ID'),
+        'enabled' => env('APP_ENV') === 'production',
+    ],
+
 ];

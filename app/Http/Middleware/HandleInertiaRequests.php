@@ -33,6 +33,15 @@ class HandleInertiaRequests extends Middleware
             ],
             'locale' => Inertia::always(fn () => app()->getLocale()),
             'translations' => Inertia::always(fn () => $this->loadTranslations(app()->getLocale())),
+            'googleAnalyticsId' => Inertia::always(function (): ?string {
+                $measurementId = config('services.google_analytics.measurement_id');
+
+                if (! config('services.google_analytics.enabled') || ! filled($measurementId)) {
+                    return null;
+                }
+
+                return is_string($measurementId) ? $measurementId : null;
+            }),
             'webPush' => fn () => $request->user()
                 ? [
                     'configured' => filled(config('web-push.vapid.public_key'))

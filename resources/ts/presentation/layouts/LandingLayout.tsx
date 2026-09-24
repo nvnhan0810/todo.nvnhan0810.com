@@ -13,6 +13,8 @@ type Props = RootProps & {
   children: ReactNode;
 };
 
+const PORTFOLIO_URL = "https://nvnhan0810.com";
+
 const LandingLayout = ({ auth, children }: Props): React.ReactElement => {
   const { t } = useTranslation();
   const route = useRoute();
@@ -102,6 +104,16 @@ const LandingLayout = ({ auth, children }: Props): React.ReactElement => {
             </div>
             <div className="text-sm text-muted-foreground sm:text-right">
               <p>{t("landing.footer_tagline")}</p>
+              <p className="mt-2">
+                <a
+                  href={PORTFOLIO_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-foreground underline-offset-4 transition-colors hover:text-teal-700 hover:underline dark:hover:text-teal-300"
+                >
+                  {t("landing.footer_portfolio")}
+                </a>
+              </p>
               <p className="mt-1 text-xs">
                 © {new Date().getFullYear()} Todo. {t("landing.footer_rights")}
               </p>
