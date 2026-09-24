@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 use Inertia\Middleware;
 use Throwable;
 
@@ -30,8 +31,8 @@ class HandleInertiaRequests extends Middleware
                 'error' => fn () => $request->session()->get('error'),
                 'created_project' => fn () => $request->session()->get('created_project'),
             ],
-            'locale' => fn () => app()->getLocale(),
-            'translations' => fn () => $this->loadTranslations(app()->getLocale()),
+            'locale' => Inertia::always(fn () => app()->getLocale()),
+            'translations' => Inertia::always(fn () => $this->loadTranslations(app()->getLocale())),
             'webPush' => fn () => $request->user()
                 ? [
                     'configured' => filled(config('web-push.vapid.public_key'))
