@@ -24,6 +24,7 @@ type Props = {
   statuses: TodoStatus[];
   priorities: TodoPriority[];
   onChange: <K extends keyof TodoFormValues>(key: K, value: TodoFormValues[K]) => void;
+  onCreateProject?: () => void;
 };
 
 const TodoFormFields = ({
@@ -33,6 +34,7 @@ const TodoFormFields = ({
   statuses,
   priorities,
   onChange,
+  onCreateProject,
 }: Props): React.ReactElement => {
   const projectOptions = [
     { value: "", label: "— Không gán —" },
@@ -78,6 +80,14 @@ const TodoFormFields = ({
           }
           placeholder="Chọn project"
           searchPlaceholder="Tìm project..."
+          footerAction={
+            onCreateProject
+              ? {
+                  label: "+ Tạo project mới",
+                  onSelect: onCreateProject,
+                }
+              : undefined
+          }
         />
         {errors.project_id && (
           <p className="text-red-400 text-sm mt-1">{errors.project_id}</p>

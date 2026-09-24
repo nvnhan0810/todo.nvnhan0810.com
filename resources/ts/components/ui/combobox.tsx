@@ -35,6 +35,10 @@ type Props = {
   className?: string;
   /** Higher z when rendered inside Dialog / fullscreen overlays */
   contentClassName?: string;
+  footerAction?: {
+    label: string;
+    onSelect: () => void;
+  };
 };
 
 const Combobox = ({
@@ -47,6 +51,7 @@ const Combobox = ({
   disabled = false,
   className,
   contentClassName,
+  footerAction,
 }: Props): React.ReactElement => {
   const [open, setOpen] = useState(false);
   const listId = useId();
@@ -106,6 +111,20 @@ const Combobox = ({
               ))}
             </CommandGroup>
           </CommandList>
+          {footerAction ? (
+            <div className="border-t border-border p-1">
+              <button
+                type="button"
+                className="flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-foreground hover:bg-accent hover:text-accent-foreground"
+                onClick={() => {
+                  setOpen(false);
+                  footerAction.onSelect();
+                }}
+              >
+                {footerAction.label}
+              </button>
+            </div>
+          ) : null}
         </Command>
       </PopoverContent>
     </Popover>

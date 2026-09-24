@@ -8,8 +8,12 @@ import {
   DialogTitle,
 } from "@/ts/components/ui/dialog";
 import { useForm } from "@inertiajs/react";
+import { useEffect, useState } from "react";
 import { useRoute } from "ziggy-js";
 import type { TodoItem, TodoPriority, TodoProject, TodoStatus } from "@/ts/domain/todo";
+import ProjectFormModal, {
+  type CreatedProjectOption,
+} from "./ProjectFormModal";
 import TodoFormFields, { type TodoFormValues } from "./TodoFormFields";
 
 export type TodoCreateDefaults = {
@@ -123,6 +127,12 @@ const TodoFormModalBody = ({
 }: BodyProps): React.ReactElement => {
   const route = useRoute();
   const isEdit = mode === "edit" && Boolean(todo?.id);
+  const [projectCreateOpen, setProjectCreateOpen] = useState(false);
+  const [projectOptions, setProjectOptions] = useState(projects);
+
+  useEffect(() => {
+    setProjectOptions(projects);
+  }, [projects]);
 
   const { data, setData, post, put, processing, errors } = useForm(
     buildInitialValues(mode, todo, defaults),
@@ -143,6 +153,19 @@ const TodoFormModalBody = ({
     });
   };
 
+  const handleProjectCreated = (project: CreatedProjectOption): void => {
+    setProjectOptions((current) => {
+      if (current.some((item) => item.id === project.id)) {
+        return current;
+      }
+
+      return [...current, project].sort((left, right) =>
+        left.name.localeCompare(right.name),
+      );
+    });
+    setData("project_id", project.id);
+  };
+
   const values: TodoFormValues = {
     project_id: data.project_id,
     title: data.title,
@@ -155,36 +178,45 @@ const TodoFormModalBody = ({
   };
 
   return (
-    <form onSubmit={submit} className="space-y-4">
-      <DialogHeader>
-        <DialogTitle>{isEdit ? "Sửa todo" : "Tạo todo"}</DialogTitle>
-        <DialogDescription>
-          {isEdit
-            ? "Cập nhật thông tin todo. Các trường đều chỉnh sửa được."
-            : "Giá trị mặc định lấy từ vùng Matrix bạn vừa chọn — vẫn chỉnh sửa bình thường."}
-        </DialogDescription>
-      </DialogHeader>
+    <>
+      <form onSubmit={submit} className="space-y-4">
+        <DialogHeader>
+          <DialogTitle>{isEdit ? "Sửa todo" : "Tạo todo"}</DialogTitle>
+          <DialogDescription>
+            {isEdit
+              ? "Cập nhật thông tin todo. Các trường đều chỉnh sửa được."
+              : "Giá trị mặc định lấy từ vùng Matrix bạn vừa chọn — vẫn chỉnh sửa bình thường."}
+          </DialogDescription>
+        </DialogHeader>
 
-      <TodoFormFields
-        values={values}
-        errors={errors}
-        projects={projects}
-        statuses={statuses}
-        priorities={priorities}
-        onChange={(key, value) => {
-          setData(key, value as never);
-        }}
+        <TodoFormFields
+          values={values}
+          errors={errors}
+          projects={projectOptions}
+          statuses={statuses}
+          priorities={priorities}
+          onChange={(key, value) => {
+            setData(key, value as never);
+          }}
+          onCreateProject={() => setProjectCreateOpen(true)}
+        />
+
+        <DialogFooter>
+          <Button type="button" variant="outline" onClick={onClose}>
+            Hủy
+          </Button>
+          <Button type="submit" disabled={processing}>
+            Lưu
+          </Button>
+        </DialogFooter>
+      </form>
+
+      <ProjectFormModal
+        open={projectCreateOpen}
+        onOpenChange={setProjectCreateOpen}
+        onCreated={handleProjectCreated}
       />
-
-      <DialogFooter>
-        <Button type="button" variant="outline" onClick={onClose}>
-          Hủy
-        </Button>
-        <Button type="submit" disabled={processing}>
-          Lưu
-        </Button>
-      </DialogFooter>
-    </form>
+    </>
   );
 };
 

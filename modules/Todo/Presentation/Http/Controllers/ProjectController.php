@@ -41,7 +41,15 @@ class ProjectController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $this->commands->dispatch(new CreateProject($this->validated($request)));
+        /** @var array{id: int, name: string} $project */
+        $project = $this->commands->dispatch(new CreateProject($this->validated($request)));
+
+        if ($request->string('return_to')->toString() === 'matrix') {
+            return redirect()->route('matrix.index')->with('created_project', [
+                'id' => $project['id'],
+                'name' => $project['name'],
+            ]);
+        }
 
         return redirect()->route('todos.projects.index');
     }
