@@ -30,13 +30,9 @@ const ListPage = ({ auth, projects }: Props) => {
 
   return (
     <AppShell auth={auth}>
-      <TodoNav />
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold text-gray-100">Todo — Projects</h1>
-        <Button
-          variant="outline"
-          onClick={() => router.get(route("todos.projects.create"))}
-        >
+        <Button variant="outline" onClick={() => router.get(route("todos.projects.create"))}>
           <Plus className="w-4 h-4 mr-1" /> New
         </Button>
       </div>
@@ -87,10 +83,7 @@ const ListPage = ({ auth, projects }: Props) => {
                     >
                       Todos
                     </a>
-                    <a
-                      href={route("todos.projects.edit", project.id)}
-                      className="text-blue-400"
-                    >
+                    <a href={route("todos.projects.edit", project.id)} className="text-blue-400">
                       Edit
                     </a>
                     <AlertDialog>

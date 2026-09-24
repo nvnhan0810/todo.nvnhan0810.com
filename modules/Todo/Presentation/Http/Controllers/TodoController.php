@@ -28,9 +28,14 @@ class TodoController extends Controller
     public function index(Request $request): Response
     {
         $projectId = $request->query('project_id');
+        $search = $request->filled('search')
+            ? mb_substr(trim($request->string('search')->toString()), 0, 200)
+            : null;
+
         $data = $this->queries->ask(new ListTodos(
             is_numeric($projectId) ? (int) $projectId : null,
             $request->filled('status') ? $request->string('status')->toString() : null,
+            $search !== null && $search !== '' ? $search : null,
         ));
 
         return Inertia::render('presentation/pages/admin/todos/ListPage', $data);

@@ -6,7 +6,6 @@ use App\Models\EisenhowerLog;
 use App\Models\Todo;
 use Illuminate\Support\Facades\DB;
 use Modules\Todo\Domain\Ports\TodoRepository;
-use Modules\Todo\Domain\TodoPriority;
 use Modules\Todo\Domain\TodoStatus;
 
 final class EloquentTodoRepository implements TodoRepository
@@ -46,6 +45,10 @@ final class EloquentTodoRepository implements TodoRepository
 
     public function paginate(array $filters, int $perPage = 20): array
     {
+        $search = isset($filters['search']) && is_string($filters['search'])
+            ? trim($filters['search'])
+            : '';
+
         $paginator = Todo::query()
             ->with('project:id,name')
             ->when(
@@ -55,6 +58,16 @@ final class EloquentTodoRepository implements TodoRepository
             ->when(
                 isset($filters['status']) && is_string($filters['status']) && $filters['status'] !== '',
                 fn ($q) => $q->where('status', $filters['status']),
+            )
+            ->when(
+                $search !== '',
+                function ($q) use ($search): void {
+                    $term = '%'.addcslashes($search, '%_\\').'%';
+                    $q->where(function ($inner) use ($term): void {
+                        $inner->whereLike('title', $term)
+                            ->orWhereLike('description', $term);
+                    });
+                },
             )
             ->orderByDesc('updated_at')
             ->paginate($perPage)

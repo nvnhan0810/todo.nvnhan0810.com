@@ -34,7 +34,7 @@ interface TodoRepository
     public function listBacklog(): array;
 
     /**
-     * @param  array{project_id?: int|null, status?: string|null}  $filters
+     * @param  array{project_id?: int|null, status?: string|null, search?: string|null}  $filters
      * @return array{data: list<array<string, mixed>>, meta: array<string, mixed>}
      */
     public function paginate(array $filters, int $perPage = 20): array;

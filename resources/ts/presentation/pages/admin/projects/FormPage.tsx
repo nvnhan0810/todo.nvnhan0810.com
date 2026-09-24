@@ -32,7 +32,6 @@ const FormPage = ({ auth, project }: Props) => {
 
   return (
     <AppShell auth={auth}>
-      <TodoNav />
       <h1 className="text-2xl font-bold text-gray-100 mb-4">
         {isEdit ? "Sửa project" : "Tạo project"}
       </h1>
@@ -59,9 +58,7 @@ const FormPage = ({ auth, project }: Props) => {
             placeholder="https://github.com/..."
             onChange={(e) => setData("git_repo_url", e.target.value)}
           />
-          {errors.git_repo_url && (
-            <p className="text-red-400 text-sm">{errors.git_repo_url}</p>
-          )}
+          {errors.git_repo_url && <p className="text-red-400 text-sm">{errors.git_repo_url}</p>}
         </div>
         <div className="flex gap-2">
           <Button type="submit" disabled={processing}>

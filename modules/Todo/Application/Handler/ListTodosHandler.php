@@ -25,11 +25,13 @@ final class ListTodosHandler implements QueryHandler
             'todos' => $this->todos->paginate([
                 'project_id' => $query->projectId,
                 'status' => $query->status,
+                'search' => $query->search,
             ], $query->perPage),
             'projects' => $this->projects->listOptions(),
             'filters' => [
                 'project_id' => $query->projectId,
                 'status' => $query->status,
+                'search' => $query->search,
             ],
             'statuses' => TodoStatus::ALL,
             'priorities' => TodoPriority::ALL,

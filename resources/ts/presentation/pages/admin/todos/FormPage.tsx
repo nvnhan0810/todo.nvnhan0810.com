@@ -54,10 +54,7 @@ const FormPage = ({
 
   return (
     <AppShell auth={auth}>
-      <TodoNav />
-      <h1 className="text-2xl font-bold text-gray-100 mb-4">
-        {isEdit ? "Sửa todo" : "Tạo todo"}
-      </h1>
+      <h1 className="text-2xl font-bold text-gray-100 mb-4">{isEdit ? "Sửa todo" : "Tạo todo"}</h1>
 
       <form onSubmit={submit} className="max-w-2xl space-y-4">
         <TodoFormFields
@@ -75,11 +72,7 @@ const FormPage = ({
           <Button type="submit" disabled={processing}>
             Lưu
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.get(route("todos.index"))}
-          >
+          <Button type="button" variant="outline" onClick={() => router.get(route("todos.index"))}>
             Hủy
           </Button>
         </div>

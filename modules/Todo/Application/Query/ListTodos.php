@@ -9,6 +9,7 @@ final class ListTodos implements Query
     public function __construct(
         public readonly ?int $projectId = null,
         public readonly ?string $status = null,
+        public readonly ?string $search = null,
         public readonly int $perPage = 20,
     ) {}
 }
