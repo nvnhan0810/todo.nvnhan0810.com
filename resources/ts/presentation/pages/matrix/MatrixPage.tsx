@@ -31,6 +31,7 @@ import { createPortal } from "react-dom";
 import { useRoute } from "ziggy-js";
 import TodoFormModal, { type TodoCreateDefaults } from "@/ts/presentation/components/TodoFormModal";
 import { pickNextMatrixTodo } from "@/ts/application/matrixTodoOrder";
+import { buildPomodoroTabTitle } from "@/ts/infrastructure/pomodoroTabPresence";
 import { useMatrixSse } from "@/ts/presentation/hooks/useMatrixSse";
 import { usePomodoro } from "@/ts/presentation/hooks/usePomodoro";
 import { useWebPush } from "@/ts/presentation/hooks/useWebPush";
@@ -551,6 +552,11 @@ const MatrixPage = ({
       seoTitle={t("seo.matrix_title")}
       seoDescription={t("seo.matrix_description")}
       seoPath="/matrix"
+      documentTitle={buildPomodoroTabTitle({
+        phase: pomodoro.phase,
+        remainingMs: pomodoro.remainingMs,
+        isRunning: pomodoro.isRunning,
+      })}
     >
       {!isFullscreen ? (
         <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto scrollbar-hidden lg:overflow-hidden">

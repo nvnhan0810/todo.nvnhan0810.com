@@ -17,6 +17,11 @@ export type SeoHeadProps = {
   type?: "website" | "article";
   /** When false, title is used as-is (landing). Default appends app name. */
   appendSiteName?: boolean;
+  /**
+   * Live browser-tab title (e.g. pomodoro countdown). When set, used for
+   * `<title>` only; Open Graph / Twitter still use `title`.
+   */
+  documentTitle?: string;
   /** Optional JSON-LD structured data object */
   jsonLd?: Record<string, unknown>;
 };
@@ -43,20 +48,22 @@ export const SeoHead = ({
   robots = "index,follow",
   type = "website",
   appendSiteName = true,
+  documentTitle: documentTitleOverride,
   jsonLd,
 }: SeoHeadProps): React.ReactElement => {
   const { appUrl = "", appName = "Todo", locale = "en" } =
     usePage().props as unknown as SharedSeoProps;
 
-  const documentTitle =
+  const seoTitle =
     appendSiteName && !title.includes(appName) ? `${title} | ${appName}` : title;
+  const headTitle = documentTitleOverride ?? seoTitle;
   const canonical = toAbsoluteUrl(appUrl, path);
   const ogImage = toAbsoluteUrl(appUrl, image);
   const ogLocale = locale === "vi" ? "vi_VN" : "en_US";
   const alternateLocale = locale === "vi" ? "en_US" : "vi_VN";
 
   return (
-    <Head title={documentTitle}>
+    <Head title={headTitle}>
       <meta head-key="description" name="description" content={description} />
       <meta head-key="robots" name="robots" content={robots} />
       <link head-key="canonical" rel="canonical" href={canonical} />
@@ -70,15 +77,15 @@ export const SeoHead = ({
         content={alternateLocale}
       />
       <meta head-key="og:url" property="og:url" content={canonical} />
-      <meta head-key="og:title" property="og:title" content={documentTitle} />
+      <meta head-key="og:title" property="og:title" content={seoTitle} />
       <meta head-key="og:description" property="og:description" content={description} />
       <meta head-key="og:image" property="og:image" content={ogImage} />
       <meta head-key="og:image:width" property="og:image:width" content="1200" />
       <meta head-key="og:image:height" property="og:image:height" content="630" />
-      <meta head-key="og:image:alt" property="og:image:alt" content={documentTitle} />
+      <meta head-key="og:image:alt" property="og:image:alt" content={seoTitle} />
 
       <meta head-key="twitter:card" name="twitter:card" content="summary_large_image" />
-      <meta head-key="twitter:title" name="twitter:title" content={documentTitle} />
+      <meta head-key="twitter:title" name="twitter:title" content={seoTitle} />
       <meta
         head-key="twitter:description"
         name="twitter:description"

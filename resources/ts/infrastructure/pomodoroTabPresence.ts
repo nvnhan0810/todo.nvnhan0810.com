@@ -17,7 +17,6 @@ type PresenceState = {
 };
 
 let installed = false;
-let originalTitle = "";
 let originalIconHrefs: Array<{ el: HTMLLinkElement; href: string }> = [];
 let faviconLink: HTMLLinkElement | null = null;
 let canvas: HTMLCanvasElement | null = null;
@@ -115,6 +114,9 @@ const buildTitle = (state: PresenceState): string => {
   return `${timer} · ${label} | Todo`;
 };
 
+/** Browser-tab title for the current pomodoro phase / remaining time. */
+export const buildPomodoroTabTitle = (state: PresenceState): string => buildTitle(state);
+
 const paintFavicon = (state: PresenceState): void => {
   const draw = ensureCanvas();
   if (!draw || !canvas) {
@@ -206,9 +208,11 @@ const stopAnimationLoop = (): void => {
 };
 
 /**
- * Sync Chrome tab title + animated favicon with pomodoro phase.
+ * Sync animated favicon with pomodoro phase.
  * Uses work/relax GIFs drawn frame-by-frame onto a canvas (Chrome does not
  * animate GIF favicons natively).
+ *
+ * Tab title is owned by Inertia `<Head>` via MatrixPage `documentTitle`.
  */
 export const syncPomodoroTabPresence = (state: PresenceState): void => {
   if (typeof document === "undefined") {
@@ -216,7 +220,6 @@ export const syncPomodoroTabPresence = (state: PresenceState): void => {
   }
 
   if (!installed) {
-    originalTitle = document.title;
     originalIconHrefs = Array.from(
       document.querySelectorAll<HTMLLinkElement>('link[rel="icon"]'),
     ).map((el) => ({ el, href: el.getAttribute("href") ?? "" }));
@@ -230,17 +233,15 @@ export const syncPomodoroTabPresence = (state: PresenceState): void => {
     ensureGifElement(state.phase);
   }
 
-  document.title = buildTitle(state);
   paintFavicon(state);
 };
 
-/** Restore document title and site favicons when leaving the matrix page */
+/** Restore site favicons when leaving the matrix page */
 export const clearPomodoroTabPresence = (): void => {
   if (!installed) {
     return;
   }
   stopAnimationLoop();
-  document.title = originalTitle || document.title;
   for (const { el, href } of originalIconHrefs) {
     if (el.isConnected && href) {
       el.href = href;
@@ -256,6 +257,5 @@ export const clearPomodoroTabPresence = (): void => {
   currentPhase = null;
   lastState = null;
   installed = false;
-  originalTitle = "";
   originalIconHrefs = [];
 };

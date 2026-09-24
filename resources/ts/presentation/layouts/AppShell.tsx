@@ -28,6 +28,11 @@ type AppShellProps = RootProps & {
   seoTitle?: string;
   seoDescription?: string;
   seoPath?: string;
+  /**
+   * Live browser-tab title (e.g. pomodoro countdown). Overrides `<title>` only;
+   * Open Graph / Twitter still use `seoTitle`.
+   */
+  documentTitle?: string;
   /** Lock shell to the viewport so children can fill remaining height without page scroll. */
   fillViewport?: boolean;
 };
@@ -47,6 +52,7 @@ const AppShell = ({
   seoTitle,
   seoDescription,
   seoPath,
+  documentTitle,
   fillViewport = false,
 }: AppShellProps): React.ReactElement => {
   const route = useRoute();
@@ -66,6 +72,7 @@ const AppShell = ({
         description={seoDescription ?? t("seo.matrix_description")}
         path={path}
         robots="noindex,nofollow"
+        documentTitle={documentTitle}
       />
       <div
         className={cn(
