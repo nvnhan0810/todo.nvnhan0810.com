@@ -5,7 +5,7 @@ import {
   TooltipTrigger,
 } from "@/ts/components/ui/tooltip";
 import { cn } from "@ts/utils";
-import { Play } from "lucide-react";
+import { Check, Play, X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { todoPriorityShortLabel } from "@/ts/domain/constants/labels";
 import type { PomodoroPhase } from "@/ts/domain/constants/pomodoro";
@@ -18,6 +18,8 @@ type Props = {
   todo: TodoItem;
   onEdit: (todo: TodoItem) => void;
   onSelectForPomodoro: (todo: TodoItem) => void;
+  onCompleteActiveTodo: () => void;
+  onClearActiveTodo: () => void;
   isPomodoroActive: boolean;
   isHighlighted: boolean;
   pomodoroPhase: PomodoroPhase;
@@ -27,6 +29,8 @@ const MatrixCard = ({
   todo,
   onEdit,
   onSelectForPomodoro,
+  onCompleteActiveTodo,
+  onClearActiveTodo,
   isPomodoroActive,
   isHighlighted,
   pomodoroPhase,
@@ -102,24 +106,65 @@ const MatrixCard = ({
           <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
             {todoPriorityShortLabel(t, todo.priority)}
           </span>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="h-6 w-6 cursor-pointer p-0 text-rose-600/80 hover:text-rose-700 dark:text-rose-300/90 dark:hover:text-rose-200"
-                aria-label={t("matrix.card_pomodoro")}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onSelectForPomodoro(todo);
-                }}
-              >
-                <Play className="w-3.5 h-3.5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="left">{t("matrix.card_pomodoro_tip")}</TooltipContent>
-          </Tooltip>
+          {isPomodoroActive ? (
+            <>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 w-6 cursor-pointer p-0 text-rose-600/80 hover:bg-rose-500/15 hover:text-rose-700 dark:text-rose-300/90 dark:hover:text-rose-200"
+                    aria-label={t("pomodoro.clear_task")}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onClearActiveTodo();
+                    }}
+                  >
+                    <X className="w-3.5 h-3.5" strokeWidth={2.5} />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="left">{t("pomodoro.clear_task_tip")}</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 w-6 cursor-pointer p-0 text-emerald-600/80 hover:bg-emerald-500/15 hover:text-emerald-700 dark:text-emerald-300/90 dark:hover:text-emerald-200"
+                    aria-label={t("pomodoro.complete_todo")}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onCompleteActiveTodo();
+                    }}
+                  >
+                    <Check className="w-3.5 h-3.5" strokeWidth={2.5} />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="left">{t("pomodoro.complete_todo_tip")}</TooltipContent>
+              </Tooltip>
+            </>
+          ) : (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 cursor-pointer p-0 text-rose-600/80 hover:text-rose-700 dark:text-rose-300/90 dark:hover:text-rose-200"
+                  aria-label={t("matrix.card_pomodoro")}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onSelectForPomodoro(todo);
+                  }}
+                >
+                  <Play className="w-3.5 h-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="left">{t("matrix.card_pomodoro_tip")}</TooltipContent>
+            </Tooltip>
+          )}
         </div>
       </div>
     </article>

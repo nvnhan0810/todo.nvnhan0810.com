@@ -15,6 +15,8 @@ type Props = {
   onCreateInQuadrant: (meta: QuadrantMeta) => void;
   onEditTodo: (todo: TodoItem) => void;
   onSelectForPomodoro: (todo: TodoItem) => void;
+  onCompleteActiveTodo: () => void;
+  onClearActiveTodo: () => void;
   activePomodoroTodoId: number | null;
   highlightedTodoId: number | null;
   pomodoroPhase: PomodoroPhase;
@@ -26,6 +28,8 @@ const MatrixQuadrant = ({
   onCreateInQuadrant,
   onEditTodo,
   onSelectForPomodoro,
+  onCompleteActiveTodo,
+  onClearActiveTodo,
   activePomodoroTodoId,
   highlightedTodoId,
   pomodoroPhase,
@@ -110,6 +114,8 @@ const MatrixQuadrant = ({
             todo={todo}
             onEdit={onEditTodo}
             onSelectForPomodoro={onSelectForPomodoro}
+            onCompleteActiveTodo={onCompleteActiveTodo}
+            onClearActiveTodo={onClearActiveTodo}
             isPomodoroActive={activePomodoroTodoId === todo.id}
             isHighlighted={highlightedTodoId === todo.id}
             pomodoroPhase={pomodoroPhase}

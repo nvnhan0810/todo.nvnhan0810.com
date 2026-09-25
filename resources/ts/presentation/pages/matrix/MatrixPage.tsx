@@ -76,6 +76,8 @@ type GridProps = {
   onCreateInQuadrant: (meta: QuadrantMeta) => void;
   onEditTodo: (todo: TodoItem) => void;
   onSelectForPomodoro: (todo: TodoItem) => void;
+  onCompleteActiveTodo: () => void;
+  onClearActiveTodo: () => void;
   activePomodoroTodoId: number | null;
   highlightedTodoId: number | null;
   pomodoroPhase: PomodoroPhase;
@@ -86,6 +88,8 @@ const MatrixGrid = ({
   onCreateInQuadrant,
   onEditTodo,
   onSelectForPomodoro,
+  onCompleteActiveTodo,
+  onClearActiveTodo,
   activePomodoroTodoId,
   highlightedTodoId,
   pomodoroPhase,
@@ -99,6 +103,8 @@ const MatrixGrid = ({
         onCreateInQuadrant={onCreateInQuadrant}
         onEditTodo={onEditTodo}
         onSelectForPomodoro={onSelectForPomodoro}
+        onCompleteActiveTodo={onCompleteActiveTodo}
+        onClearActiveTodo={onClearActiveTodo}
         activePomodoroTodoId={activePomodoroTodoId}
         highlightedTodoId={highlightedTodoId}
         pomodoroPhase={pomodoroPhase}
@@ -517,6 +523,8 @@ const MatrixPage = ({
       onCreateInQuadrant={openCreateInQuadrant}
       onEditTodo={openEdit}
       onSelectForPomodoro={selectForPomodoro}
+      onCompleteActiveTodo={completeActiveTodo}
+      onClearActiveTodo={clearActiveTodo}
       activePomodoroTodoId={pomodoro.activeTodoId}
       highlightedTodoId={highlightedTodoId}
       pomodoroPhase={pomodoro.phase}
