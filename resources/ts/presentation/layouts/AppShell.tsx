@@ -62,7 +62,8 @@ const AppShell = ({
   const path =
     seoPath ??
     (typeof page.url === "string" && page.url !== "" ? (page.url.split("?")[0] ?? "/") : "/");
-  const navPath = typeof window !== "undefined" ? window.location.pathname : path;
+  // Use Inertia `page.url` only — never `window` during render (SSR hydration #418).
+  const navPath = path;
 
   return (
     <TooltipProvider delayDuration={250}>

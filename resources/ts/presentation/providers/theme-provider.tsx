@@ -26,16 +26,16 @@ export function ThemeProvider({
   defaultTheme = "system",
   storageKey = "todo-ui-theme",
 }: ThemeProviderProps): React.ReactElement {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === "undefined") {
-      return defaultTheme;
-    }
+  // Always start from defaultTheme so SSR HTML matches the first client render.
+  // Reading localStorage in useState() causes React #418 hydration mismatches.
+  const [theme, setTheme] = useState<Theme>(defaultTheme);
+
+  useEffect(() => {
     const stored = window.localStorage.getItem(storageKey);
     if (stored === "dark" || stored === "light" || stored === "system") {
-      return stored;
+      setTheme(stored);
     }
-    return defaultTheme;
-  });
+  }, [storageKey]);
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -55,9 +55,7 @@ export function ThemeProvider({
       value={{
         theme,
         setTheme: (next) => {
-          if (typeof window !== "undefined") {
-            window.localStorage.setItem(storageKey, next);
-          }
+          window.localStorage.setItem(storageKey, next);
           setTheme(next);
         },
       }}

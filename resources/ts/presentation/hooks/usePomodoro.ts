@@ -157,6 +157,8 @@ export const usePomodoro = (args: UsePomodoroArgs = {}): UsePomodoroResult => {
         return;
       }
       commandAbortRef.current?.abort();
+      // Drop in-flight GET so a slower show response cannot clobber this command.
+      hydrateAbortRef.current?.abort();
       const controller = new AbortController();
       commandAbortRef.current = controller;
       try {
@@ -179,8 +181,8 @@ export const usePomodoro = (args: UsePomodoroArgs = {}): UsePomodoroResult => {
     hydrateAbortRef.current = controller;
     void fetchPomodoroState(currentUrls.show, controller.signal)
       .then((remote) => {
-        // GET is source of truth across devices — always apply.
-        applyServerPayload(remote, { force: true });
+        // Respect updatedAt: a slow GET must not overwrite a newer start/pause/skip.
+        applyServerPayload(remote);
       })
       .catch(() => {
         // ignore
