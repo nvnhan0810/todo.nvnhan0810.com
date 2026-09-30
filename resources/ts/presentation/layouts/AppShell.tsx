@@ -6,6 +6,7 @@ import { LocaleToggle } from "@/ts/components/ui/locale-toggle";
 import { ThemeToggle } from "@/ts/components/ui/theme-toggle";
 import { Button } from "@/ts/components/ui/button";
 import { TooltipProvider } from "@/ts/components/ui/tooltip";
+import PullToReloadHost from "@/ts/presentation/components/PullToReloadHost";
 import { SeoHead } from "@/ts/presentation/components/SeoHead";
 import { useTranslation } from "@/ts/presentation/i18n/useTranslation";
 import { cn } from "@/ts/utils";
@@ -60,9 +61,7 @@ const AppShell = ({
   const page = usePage();
   const path =
     seoPath ??
-    (typeof page.url === "string" && page.url !== ""
-      ? page.url.split("?")[0] ?? "/"
-      : "/");
+    (typeof page.url === "string" && page.url !== "" ? (page.url.split("?")[0] ?? "/") : "/");
   const navPath = typeof window !== "undefined" ? window.location.pathname : path;
 
   return (
@@ -74,16 +73,20 @@ const AppShell = ({
         robots="noindex,nofollow"
         documentTitle={documentTitle}
       />
+      <PullToReloadHost />
       <div
         className={cn(
-          "flex flex-col bg-background text-foreground",
+          "flex flex-col bg-background text-foreground overscroll-y-contain",
           fillViewport ? "h-dvh overflow-hidden" : "min-h-dvh",
         )}
       >
         <header className="shrink-0 border-b border-border bg-card">
           <div className="flex w-full items-center justify-between gap-4 px-4 py-3 sm:px-6">
             <div className="flex min-w-0 items-center gap-4">
-              <Link href={route("matrix.index")} className="flex shrink-0 items-center gap-2 font-semibold tracking-tight">
+              <Link
+                href={route("matrix.index")}
+                className="flex shrink-0 items-center gap-2 font-semibold tracking-tight"
+              >
                 <img
                   src="/images/favicon-32x32.png"
                   alt=""
@@ -94,20 +97,33 @@ const AppShell = ({
                 Todo
               </Link>
               <nav className="hidden items-center gap-1 sm:flex">
-                <Link href={route("matrix.index")} className={navLinkClass(navPath.startsWith("/matrix"))}>
+                <Link
+                  href={route("matrix.index")}
+                  className={navLinkClass(navPath.startsWith("/matrix"))}
+                >
                   <LayoutGrid className="h-4 w-4" />
                   {t("nav.matrix")}
                 </Link>
-                <Link href={route("todos.index")} className={navLinkClass(navPath.startsWith("/todos") && !navPath.includes("/projects"))}>
+                <Link
+                  href={route("todos.index")}
+                  className={navLinkClass(
+                    navPath.startsWith("/todos") && !navPath.includes("/projects"),
+                  )}
+                >
                   <CheckSquare2 className="h-4 w-4" />
                   {t("nav.todos")}
                 </Link>
-                <Link href={route("todos.projects.index")} className={navLinkClass(navPath.includes("/projects"))}>
+                <Link
+                  href={route("todos.projects.index")}
+                  className={navLinkClass(navPath.includes("/projects"))}
+                >
                   <FolderKanban className="h-4 w-4" />
                   {t("nav.projects")}
                 </Link>
               </nav>
-              {title ? <span className="truncate text-sm text-muted-foreground sm:hidden">{title}</span> : null}
+              {title ? (
+                <span className="truncate text-sm text-muted-foreground sm:hidden">{title}</span>
+              ) : null}
             </div>
             <div className="flex items-center gap-2">
               <LocaleToggle />

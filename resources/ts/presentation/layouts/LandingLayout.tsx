@@ -2,6 +2,7 @@ import { Button } from "@/ts/components/ui/button";
 import { LocaleToggle } from "@/ts/components/ui/locale-toggle";
 import { ThemeToggle } from "@/ts/components/ui/theme-toggle";
 import { TooltipProvider } from "@/ts/components/ui/tooltip";
+import PullToReloadHost from "@/ts/presentation/components/PullToReloadHost";
 import type { RootProps } from "@/ts/presentation/layouts/AppShell";
 import { useTranslation } from "@/ts/presentation/i18n/useTranslation";
 import { cn } from "@/ts/utils";
@@ -40,7 +41,8 @@ const LandingLayout = ({ auth, children }: Props): React.ReactElement => {
 
   return (
     <TooltipProvider delayDuration={250}>
-      <div className="min-h-dvh bg-background text-foreground">
+      <PullToReloadHost />
+      <div className="min-h-dvh bg-background text-foreground overscroll-y-contain">
         <header
           className={cn(
             "sticky top-0 z-40 border-b transition-colors duration-200",
