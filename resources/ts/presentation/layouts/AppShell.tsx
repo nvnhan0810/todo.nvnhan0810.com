@@ -76,7 +76,7 @@ const AppShell = ({
       <PullToReloadHost />
       <div
         className={cn(
-          "flex flex-col bg-background text-foreground overscroll-y-contain",
+          "flex flex-col bg-background text-foreground",
           fillViewport ? "h-dvh overflow-hidden" : "min-h-dvh",
         )}
       >

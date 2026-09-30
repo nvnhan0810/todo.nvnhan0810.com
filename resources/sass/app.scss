@@ -92,12 +92,6 @@
     body {
         @apply min-h-dvh bg-background text-foreground antialiased;
     }
-
-    /* Keep custom pull-to-reload from fighting browser rubber-band / native PTR. */
-    html,
-    body {
-        overscroll-behavior-y: none;
-    }
 }
 
 @layer utilities {
@@ -105,7 +99,6 @@
     .scrollbar-hidden {
         scrollbar-width: none;
         -ms-overflow-style: none;
-        overscroll-behavior-y: contain;
     }
 
     .scrollbar-hidden::-webkit-scrollbar {

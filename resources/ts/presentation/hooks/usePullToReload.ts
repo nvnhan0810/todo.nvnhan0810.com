@@ -21,7 +21,7 @@ type GestureRef = {
   startY: number;
   startX: number;
   startTarget: EventTarget | null;
-  active: boolean;
+  armed: boolean;
   pulling: boolean;
 };
 
@@ -39,6 +39,7 @@ const elementCanScroll = (element: Element): boolean => {
   return element.scrollHeight > element.clientHeight + 1;
 };
 
+/** True when window + every scrollable ancestor of the touch target is at top. */
 const isScrollAncestorAtTop = (target: EventTarget | null): boolean => {
   if (typeof window === "undefined") {
     return false;
@@ -83,8 +84,13 @@ const clampPullDistance = (distance: number): number =>
   Math.min(PULL_TO_RELOAD_MAX_PX, Math.max(0, distance));
 
 /**
- * Pull-to-reload via touch. Soft-reloads the current Inertia page.
- * Works on mobile browsers and installed PWAs (touch events only).
+ * Whole-page pull-to-reload.
+ *
+ * Safety rules (Matrix nested scroll):
+ * - Never keep a permanent non-passive `touchmove` on `document`
+ * - Arm only when every scroll ancestor is at top
+ * - Call preventDefault only after a clear downward pull past activation
+ * - Unbind move/end listeners as soon as the gesture ends or is abandoned
  */
 export const usePullToReload = (): PullToReloadState => {
   const [phase, setPhase] = useState<Phase>(PullToReloadPhase.Idle);
@@ -94,9 +100,12 @@ export const usePullToReload = (): PullToReloadState => {
     startY: 0,
     startX: 0,
     startTarget: null,
-    active: false,
+    armed: false,
     pulling: false,
   });
+  const moveRef = useRef<((event: TouchEvent) => void) | null>(null);
+  const endRef = useRef<((event: TouchEvent) => void) | null>(null);
+  const cancelRef = useRef<((event: TouchEvent) => void) | null>(null);
 
   useEffect(() => {
     phaseRef.current = phase;
@@ -107,14 +116,34 @@ export const usePullToReload = (): PullToReloadState => {
       return;
     }
 
-    const resetGesture = (): void => {
+    const unbindGestureListeners = (): void => {
+      if (moveRef.current) {
+        document.removeEventListener("touchmove", moveRef.current);
+        moveRef.current = null;
+      }
+      if (endRef.current) {
+        document.removeEventListener("touchend", endRef.current);
+        endRef.current = null;
+      }
+      if (cancelRef.current) {
+        document.removeEventListener("touchcancel", cancelRef.current);
+        cancelRef.current = null;
+      }
+    };
+
+    const clearGesture = (): void => {
+      unbindGestureListeners();
       gestureRef.current = {
         startY: 0,
         startX: 0,
         startTarget: null,
-        active: false,
+        armed: false,
         pulling: false,
       };
+    };
+
+    const resetUi = (): void => {
+      clearGesture();
       setPullDistance(0);
       if (phaseRef.current !== PullToReloadPhase.Reloading) {
         setPhase(PullToReloadPhase.Idle);
@@ -128,55 +157,18 @@ export const usePullToReload = (): PullToReloadState => {
         onFinish: () => {
           setPullDistance(0);
           setPhase(PullToReloadPhase.Idle);
-          gestureRef.current = {
-            startY: 0,
-            startX: 0,
-            startTarget: null,
-            active: false,
-            pulling: false,
-          };
+          clearGesture();
         },
       });
     };
 
-    const onTouchStart = (event: TouchEvent): void => {
-      if (phaseRef.current === PullToReloadPhase.Reloading) {
-        return;
-      }
-      if (event.touches.length !== 1) {
-        resetGesture();
-        return;
-      }
-      if (isBlockedOverlayOpen() || isInteractiveField(event.target)) {
-        resetGesture();
-        return;
-      }
-      if (!isScrollAncestorAtTop(event.target)) {
-        resetGesture();
-        return;
-      }
-
-      const touch = event.touches[0];
-      if (!touch) {
-        return;
-      }
-
-      gestureRef.current = {
-        startY: touch.clientY,
-        startX: touch.clientX,
-        startTarget: event.target,
-        active: true,
-        pulling: false,
-      };
-    };
-
     const onTouchMove = (event: TouchEvent): void => {
       const gesture = gestureRef.current;
-      if (!gesture.active || phaseRef.current === PullToReloadPhase.Reloading) {
+      if (!gesture.armed || phaseRef.current === PullToReloadPhase.Reloading) {
         return;
       }
       if (event.touches.length !== 1) {
-        resetGesture();
+        resetUi();
         return;
       }
 
@@ -188,34 +180,46 @@ export const usePullToReload = (): PullToReloadState => {
       const deltaY = touch.clientY - gesture.startY;
       const deltaX = touch.clientX - gesture.startX;
 
-      // Horizontal swipe — abandon pull-to-reload.
-      if (!gesture.pulling && Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
-        gesture.active = false;
-        return;
-      }
-
-      if (deltaY <= 0) {
-        if (gesture.pulling) {
-          resetGesture();
+      // Deciding intent: never preventDefault — native scroll must win.
+      if (!gesture.pulling) {
+        // Scrolling content (finger up) → abandon immediately.
+        if (deltaY < 0) {
+          resetUi();
+          return;
         }
-        return;
+
+        // Horizontal swipe → abandon.
+        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 12) {
+          resetUi();
+          return;
+        }
+
+        if (deltaY < PULL_TO_RELOAD_ACTIVATION_PX) {
+          return;
+        }
+
+        // Left the top while deciding → abandon.
+        if (!isScrollAncestorAtTop(gesture.startTarget)) {
+          resetUi();
+          return;
+        }
+
+        gesture.pulling = true;
       }
 
       if (!isScrollAncestorAtTop(gesture.startTarget)) {
-        resetGesture();
+        resetUi();
         return;
       }
 
-      // Claim the gesture immediately so the browser does not scroll/rubber-band.
+      // Committed pull — block rubber-band / native PTR for this gesture only.
       if (event.cancelable) {
         event.preventDefault();
       }
 
-      if (!gesture.pulling) {
-        if (deltaY < PULL_TO_RELOAD_ACTIVATION_PX) {
-          return;
-        }
-        gesture.pulling = true;
+      if (deltaY <= 0) {
+        resetUi();
+        return;
       }
 
       const distance = clampPullDistance(deltaY);
@@ -229,19 +233,13 @@ export const usePullToReload = (): PullToReloadState => {
 
     const onTouchEnd = (): void => {
       const gesture = gestureRef.current;
-      if (!gesture.active) {
+      if (!gesture.armed) {
         return;
       }
 
       const shouldReload = gesture.pulling && phaseRef.current === PullToReloadPhase.Ready;
 
-      gestureRef.current = {
-        startY: 0,
-        startX: 0,
-        startTarget: null,
-        active: false,
-        pulling: false,
-      };
+      clearGesture();
 
       if (shouldReload) {
         triggerReload();
@@ -256,19 +254,60 @@ export const usePullToReload = (): PullToReloadState => {
       if (phaseRef.current === PullToReloadPhase.Reloading) {
         return;
       }
-      resetGesture();
+      resetUi();
     };
 
+    const onTouchStart = (event: TouchEvent): void => {
+      // Always drop a stale armed gesture before evaluating a new touch.
+      if (gestureRef.current.armed) {
+        clearGesture();
+        setPullDistance(0);
+        if (phaseRef.current !== PullToReloadPhase.Reloading) {
+          setPhase(PullToReloadPhase.Idle);
+        }
+      }
+
+      if (phaseRef.current === PullToReloadPhase.Reloading) {
+        return;
+      }
+      if (event.touches.length !== 1) {
+        return;
+      }
+      if (isBlockedOverlayOpen() || isInteractiveField(event.target)) {
+        return;
+      }
+      if (!isScrollAncestorAtTop(event.target)) {
+        return;
+      }
+
+      const touch = event.touches[0];
+      if (!touch) {
+        return;
+      }
+
+      gestureRef.current = {
+        startY: touch.clientY,
+        startX: touch.clientX,
+        startTarget: event.target,
+        armed: true,
+        pulling: false,
+      };
+
+      moveRef.current = onTouchMove;
+      endRef.current = onTouchEnd;
+      cancelRef.current = onTouchCancel;
+
+      document.addEventListener("touchmove", onTouchMove, { passive: false });
+      document.addEventListener("touchend", onTouchEnd);
+      document.addEventListener("touchcancel", onTouchCancel);
+    };
+
+    // Permanent listener is passive only — does not block scroll.
     document.addEventListener("touchstart", onTouchStart, { passive: true });
-    document.addEventListener("touchmove", onTouchMove, { passive: false });
-    document.addEventListener("touchend", onTouchEnd);
-    document.addEventListener("touchcancel", onTouchCancel);
 
     return () => {
       document.removeEventListener("touchstart", onTouchStart);
-      document.removeEventListener("touchmove", onTouchMove);
-      document.removeEventListener("touchend", onTouchEnd);
-      document.removeEventListener("touchcancel", onTouchCancel);
+      clearGesture();
     };
   }, []);
 

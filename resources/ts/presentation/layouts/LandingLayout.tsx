@@ -42,7 +42,7 @@ const LandingLayout = ({ auth, children }: Props): React.ReactElement => {
   return (
     <TooltipProvider delayDuration={250}>
       <PullToReloadHost />
-      <div className="min-h-dvh bg-background text-foreground overscroll-y-contain">
+      <div className="min-h-dvh bg-background text-foreground">
         <header
           className={cn(
             "sticky top-0 z-40 border-b transition-colors duration-200",

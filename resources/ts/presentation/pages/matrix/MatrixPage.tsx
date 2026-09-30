@@ -94,7 +94,7 @@ const MatrixGrid = ({
   highlightedTodoId,
   pomodoroPhase,
 }: GridProps): React.ReactElement => (
-  <div className="grid h-full min-h-0 grid-cols-1 gap-3 lg:grid-cols-2 lg:grid-rows-[minmax(0,1fr)_minmax(0,1fr)]">
+  <div className="grid min-h-0 grid-cols-1 gap-3 lg:h-full lg:grid-cols-2 lg:grid-rows-[minmax(0,1fr)_minmax(0,1fr)]">
     {QUADRANTS.map((meta) => (
       <MatrixQuadrant
         key={meta.key}
@@ -549,7 +549,8 @@ const MatrixPage = ({
       </div>
 
       <div className="shrink-0">{pomodoroBar}</div>
-      <div className="min-h-0 flex-1 overflow-hidden">{grid}</div>
+      {/* Mobile: let grid grow so the page can scroll. Desktop: fill remaining height. */}
+      <div className="min-h-0 lg:flex-1 lg:overflow-hidden">{grid}</div>
     </>
   );
 
