@@ -23,6 +23,9 @@ final class EloquentWebPushSubscriptionRepository implements WebPushSubscription
                 'content_encoding' => $subscription->contentEncoding,
                 'user_agent' => $subscription->userAgent,
                 'last_focused_at' => $subscription->lastFocusedAt,
+                'is_active' => true,
+                'failed_sent' => 0,
+                'last_failed_reason' => null,
             ],
         );
     }
@@ -59,9 +62,42 @@ final class EloquentWebPushSubscriptionRepository implements WebPushSubscription
     {
         return WebPushSubscriptionModel::query()
             ->where('user_id', $userId)
+            ->where('is_active', true)
             ->get()
             ->map(fn (WebPushSubscriptionModel $row): WebPushSubscription => $this->toDomain($row))
             ->all();
+    }
+
+    public function recordSendSuccess(string $endpoint): void
+    {
+        WebPushSubscriptionModel::query()
+            ->where('endpoint_hash', hash('sha256', $endpoint))
+            ->update([
+                'failed_sent' => 0,
+                'last_failed_reason' => null,
+            ]);
+    }
+
+    public function recordSendFailure(string $endpoint, string $reason): void
+    {
+        $endpointHash = hash('sha256', $endpoint);
+
+        $affected = WebPushSubscriptionModel::query()
+            ->where('endpoint_hash', $endpointHash)
+            ->increment('failed_sent');
+
+        if ($affected === 0) {
+            return;
+        }
+
+        WebPushSubscriptionModel::query()
+            ->where('endpoint_hash', $endpointHash)
+            ->update(['last_failed_reason' => $reason]);
+
+        WebPushSubscriptionModel::query()
+            ->where('endpoint_hash', $endpointHash)
+            ->where('failed_sent', '>=', WebPushSubscription::MAX_CONSECUTIVE_FAILURES)
+            ->update(['is_active' => false]);
     }
 
     private function toDomain(WebPushSubscriptionModel $row): WebPushSubscription
@@ -77,6 +113,9 @@ final class EloquentWebPushSubscriptionRepository implements WebPushSubscription
             contentEncoding: (string) $row->content_encoding,
             userAgent: $row->user_agent !== null ? (string) $row->user_agent : null,
             lastFocusedAt: $focused,
+            isActive: (bool) $row->is_active,
+            failedSent: (int) $row->failed_sent,
+            lastFailedReason: $row->last_failed_reason !== null ? (string) $row->last_failed_reason : null,
         );
     }
 }

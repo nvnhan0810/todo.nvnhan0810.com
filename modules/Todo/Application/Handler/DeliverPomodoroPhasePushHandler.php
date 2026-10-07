@@ -176,13 +176,20 @@ final class DeliverPomodoroPhasePushHandler implements CommandHandler
         ];
 
         $sent = 0;
+        $failed = 0;
         foreach ($this->subscriptions->listByUserId($userId) as $subscription) {
-            $ok = $this->sender->send($subscription, $payload);
-            if (! $ok) {
-                $this->subscriptions->deleteByEndpointOnly($subscription->endpoint);
+            $result = $this->sender->send($subscription, $payload);
+            if (! $result->ok) {
+                $this->subscriptions->recordSendFailure(
+                    $subscription->endpoint,
+                    $result->failureReason ?? 'unknown',
+                );
+                $failed++;
 
                 continue;
             }
+
+            $this->subscriptions->recordSendSuccess($subscription->endpoint);
             $sent++;
         }
 
@@ -190,6 +197,7 @@ final class DeliverPomodoroPhasePushHandler implements CommandHandler
             'user_id' => $userId,
             'session_uuid' => $sessionUuid,
             'sent' => $sent,
+            'failed' => $failed,
         ]);
     }
 

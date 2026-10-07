@@ -2,16 +2,19 @@
 
 namespace Modules\Todo\Infrastructure;
 
+use Illuminate\Support\Facades\Log;
 use Minishlink\WebPush\Subscription;
 use Minishlink\WebPush\WebPush;
 use Modules\Todo\Domain\Ports\WebPushSender;
+use Modules\Todo\Domain\WebPushSendResult;
 use Modules\Todo\Domain\WebPushSubscription;
 use Throwable;
-use Illuminate\Support\Facades\Log;
 
 final class MinishlinkWebPushSender implements WebPushSender
 {
     private const TOPIC_MAX_LENGTH = 32;
+
+    private const FAILURE_REASON_MAX_LENGTH = 2000;
 
     public function isConfigured(): bool
     {
@@ -22,10 +25,10 @@ final class MinishlinkWebPushSender implements WebPushSender
             && is_string($private) && $private !== '';
     }
 
-    public function send(WebPushSubscription $subscription, array $payload): bool
+    public function send(WebPushSubscription $subscription, array $payload): WebPushSendResult
     {
         if (! $this->isConfigured()) {
-            return true;
+            return WebPushSendResult::success();
         }
 
         $auth = [
@@ -71,11 +74,11 @@ final class MinishlinkWebPushSender implements WebPushSender
                 'message' => $e->getMessage(),
             ]);
 
-            return true;
+            return WebPushSendResult::success();
         }
 
         if ($report->isSuccess()) {
-            return true;
+            return WebPushSendResult::success();
         }
 
         $reason = $report->getReason();
@@ -89,12 +92,7 @@ final class MinishlinkWebPushSender implements WebPushSender
             'topic' => $options['topic'] ?? null,
         ]);
 
-        // Gone / expired subscription
-        if (str_contains($reason, '410') || str_contains($reason, '404')) {
-            return false;
-        }
-
-        return true;
+        return WebPushSendResult::failure($this->formatFailureReason($reason, $body));
     }
 
     /**
@@ -112,5 +110,14 @@ final class MinishlinkWebPushSender implements WebPushSender
         }
 
         return substr($safe, 0, self::TOPIC_MAX_LENGTH);
+    }
+
+    private function formatFailureReason(string $reason, string $body): string
+    {
+        $detail = $body !== ''
+            ? $reason.' | '.mb_substr($body, 0, 1000)
+            : $reason;
+
+        return mb_substr($detail, 0, self::FAILURE_REASON_MAX_LENGTH);
     }
 }

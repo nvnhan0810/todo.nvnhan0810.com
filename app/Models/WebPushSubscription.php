@@ -16,12 +16,17 @@ class WebPushSubscription extends Model
         'content_encoding',
         'user_agent',
         'last_focused_at',
+        'is_active',
+        'failed_sent',
+        'last_failed_reason',
     ];
 
     protected function casts(): array
     {
         return [
             'last_focused_at' => 'datetime',
+            'is_active' => 'boolean',
+            'failed_sent' => 'integer',
         ];
     }
 
